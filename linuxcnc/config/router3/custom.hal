@@ -1,0 +1,48 @@
+# Place any HAL commands in this file that you want to run before the GUI.
+# This file will not be written over by the configuration tool.
+
+
+# Spindle
+
+loadrt scale count=1
+addf scale.0 servo-thread
+setp scale.0.gain 0.00416667
+net spindle-speed-scale spindle.0.speed-out-abs => scale.0.in
+net spindle-speed-DAC scale.0.out => hm2_7i76e.0.7i76.0.0.spinout
+
+net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
+net spindle-fwd spindle.0.reverse => hm2_7i76e.0.7i76.0.0.spindir
+
+net temp-ok <= hm2_7i76e.0.7i76.0.0.input-04
+net collet-open <= hm2_7i76e.0.7i76.0.0.input-05
+net collet-locked <= hm2_7i76e.0.7i76.0.0.input-06
+net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
+
+
+# Ladder
+
+loadrt classicladder_rt
+addf classicladder.0.refresh servo-thread
+
+loadusr classicladder ladder.clp
+
+
+net temp-ok => classicladder.0.in-00
+net collet-open => classicladder.0.in-01
+net collet-locked => classicladder.0.in-02
+net spindle-button => classicladder.0.in-03
+
+# The open-collet command signal
+
+net digital-out-open-collet classicladder.0.out-00 => hm2_7i76e.0.7i76.0.0.output-06
+
+# Purge air
+
+net digital-out-purge-air => hm2_7i76e.0.7i76.0.0.output-07
+
+#
+# Notes
+#
+
+# motion.digital-out-02 is m64/m65 p2
+# motion.digital-out-03 is m64/m65 p3

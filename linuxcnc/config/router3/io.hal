@@ -1,0 +1,17 @@
+# This file was created with the 7i76e Wizard on Jun 20 2019 23:05:00
+# If you make changes to this file your screwed
+
+net min-limit-home-joint-0 joint.0.neg-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-08-not
+net min-limit-home-joint-0 joint.0.home-sw-in
+net max-limit-joint-0 joint.0.pos-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-09-not
+
+net min-limit-home-joint-1 joint.1.neg-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-10-not
+net min-limit-home-joint-1 joint.1.home-sw-in
+net max-limit-joint-1 joint.1.pos-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-11-not
+
+net max-limit-home-joint-2 joint.2.pos-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-12-not
+net max-limit-home-joint-2 joint.2.home-sw-in
+
+net max-limit-home-joint-3 joint.3.pos-lim-sw-in <= hm2_7i76e.0.7i76.0.0.input-13-not
+net max-limit-home-joint-3 joint.3.home-sw-in
+
