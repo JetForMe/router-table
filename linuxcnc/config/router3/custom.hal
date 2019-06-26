@@ -1,8 +1,39 @@
 # Place any HAL commands in this file that you want to run before the GUI.
 # This file will not be written over by the configuration tool.
 
+# System Pneumatic Pressure
+#
+# We don't have a pressure-ok sensor yet, so
+# just assume it’s good…
+#
+# Wow, this clusterfuck is because there doesn't seem to be
+# a way to set a net to a constant value.
 
+loadrt constant count=2
+addf constant.0 servo-thread
+addf constant.1 servo-thread
+
+setp constant.0.value 0
+setp constant.1.value 1
+
+loadrt near count=2
+addf near.0 servo-thread
+addf near.1 servo-thread
+
+net zero <= constant.0.out
+net one <= constant.1.out
+
+net zero => near.0.in1
+net one => near.0.in2
+
+net one => near.1.in1
+net one => near.1.in2
+
+net pressure-ok <= near.1.out
+
+#
 # Spindle
+#
 
 loadrt scale count=1
 addf scale.0 servo-thread
@@ -10,14 +41,57 @@ setp scale.0.gain 0.00416667
 net spindle-speed-scale spindle.0.speed-out-abs => scale.0.in
 net spindle-speed-DAC scale.0.out => hm2_7i76e.0.7i76.0.0.spinout
 
-net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
 net spindle-fwd spindle.0.reverse => hm2_7i76e.0.7i76.0.0.spindir
 
-net temp-ok <= hm2_7i76e.0.7i76.0.0.input-04
-net collet-open <= hm2_7i76e.0.7i76.0.0.input-05
-net collet-locked <= hm2_7i76e.0.7i76.0.0.input-06
+net spindle-temp-ok <= hm2_7i76e.0.7i76.0.0.input-04
+net spindle-collet-open <= hm2_7i76e.0.7i76.0.0.input-05
+net spindle-collet-locked <= hm2_7i76e.0.7i76.0.0.input-06
 net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
 
+## Spindle Speed
+
+net zero-speed <= hm2_7i76e.0.7i76.0.0.input-23
+
+# This prevents the motion component from executing the first feed move
+# after each spindle start or speed change, but does not prevent rapids.
+# See http://linuxcnc.org/docs/devel/html/man/man9/motion.9.html#SPINDLE%20PINS
+# for more details.
+#
+# We use the VFD’s at-operational-speed signal, which just means the
+# VFD has ramped up its output frequency to the commanded speed. It does
+# NOT mean the spindle is actually at that speed.
+
+net spindle-at-speed <= hm2_7i76e.0.7i76.0.0.input-22
+net spindle-at-speed => spindle.0.at-speed
+
+# Spindle enable/inhibit
+
+net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
+
+# spindle-inhibit = !spindle-temp-ok || !spindle-collet-locked || !pressure-ok
+#
+# lut5.py -n3 '(not i0) | (not i1) | (not i2)
+# expression = (not i0) | (not i1) | (not i2)
+#in: i4 i3 i2 i1 i0 out weight
+# 0:  0  0  0  0  0  1   0x1
+# 1:  0  0  0  0  1  1   0x2
+# 2:  0  0  0  1  0  1   0x4
+# 3:  0  0  0  1  1  1   0x8
+# 4:  0  0  1  0  0  1   0x10
+# 5:  0  0  1  0  1  1   0x20
+# 6:  0  0  1  1  0  1   0x40
+# 7:  0  0  1  1  1  0
+# setp lut5.N.function 0x7f
+
+loadrt lut5 count=1 #names=spindleInhibit
+addf lut5.0 servo-thread
+
+setp lut5.0.function 0x7f
+net spindle-temp-ok => lut5.0.in-0
+net spindle-collet-locked => lut5.0.in-1
+net pressure-ok => lut5.0.in-2
+
+net spindle-inhibit spindle.0.inhibit <= lut5.0.out
 
 # Ladder
 
