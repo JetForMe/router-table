@@ -29,7 +29,50 @@ net one => near.0.in2
 net one => near.1.in1
 net one => near.1.in2
 
-net pressure-ok <= near.1.out
+net pressure-ok-in <= near.1.out
+
+#
+#	Physical Inputs
+#
+
+net spindle-button-in-raw <= hm2_7i76e.0.7i76.0.0.input-07
+net spindle-temp-ok-in <= hm2_7i76e.0.7i76.0.0.input-04
+net spindle-collet-open-in-raw <= hm2_7i76e.0.7i76.0.0.input-05
+net spindle-collet-locked-in-raw <= hm2_7i76e.0.7i76.0.0.input-06
+net spindle-zero-speed-in <= hm2_7i76e.0.7i76.0.0.input-23
+net spindle-at-speed-in <= hm2_7i76e.0.7i76.0.0.input-22
+
+#
+# Program Inputs (commands)
+#
+
+net program-idle <= halui.program.is-idle
+net program-open-collet <= motion.digital-out-02		# m64/m65 p2
+net program-purge-air <= motion.digital-out-03			# m64/m65 p3
+
+
+#
+#	Outputs
+#
+
+net spindle-open-collet-out => hm2_7i76e.0.7i76.0.0.output-06
+net spindle-purge-air-out => hm2_7i76e.0.7i76.0.0.output-07
+
+# Debounce spindle-button-in-raw, spindle-collet-open-in-raw, spindle-collet-locked-in-raw
+
+loadrt debounce cfg=3
+addf debounce.0 servo-thread
+
+setp debounce.0.delay 4
+
+net spindle-button-in-raw => debounce.0.0.in
+net spindle-button-in <= debounce.0.0.out
+
+net spindle-collet-open-in-raw => debounce.0.1.in
+net spindle-collet-open-in <= debounce.0.1.out
+
+net spindle-collet-locked-in-raw => debounce.0.2.in
+net spindle-collet-locked-in <= debounce.0.2.out
 
 #
 # Spindle
@@ -43,15 +86,10 @@ net spindle-speed-DAC scale.0.out => hm2_7i76e.0.7i76.0.0.spinout
 
 net spindle-fwd spindle.0.reverse => hm2_7i76e.0.7i76.0.0.spindir
 
-net spindle-temp-ok <= hm2_7i76e.0.7i76.0.0.input-04
-net spindle-collet-open <= hm2_7i76e.0.7i76.0.0.input-05
-net spindle-collet-locked <= hm2_7i76e.0.7i76.0.0.input-06
-net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
+# net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
 
 ## Spindle Speed
-
-net zero-speed <= hm2_7i76e.0.7i76.0.0.input-23
-
+#
 # This prevents the motion component from executing the first feed move
 # after each spindle start or speed change, but does not prevent rapids.
 # See http://linuxcnc.org/docs/devel/html/man/man9/motion.9.html#SPINDLE%20PINS
@@ -61,14 +99,13 @@ net zero-speed <= hm2_7i76e.0.7i76.0.0.input-23
 # VFD has ramped up its output frequency to the commanded speed. It does
 # NOT mean the spindle is actually at that speed.
 
-net spindle-at-speed <= hm2_7i76e.0.7i76.0.0.input-22
-net spindle-at-speed => spindle.0.at-speed
+net spindle-at-speed-in => spindle.0.at-speed
 
 # Spindle enable/inhibit
 
 net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
 
-# spindle-inhibit = !spindle-temp-ok || !spindle-collet-locked || !pressure-ok
+# spindle-inhibit = !spindle-temp-ok-in || !spindle-collet-locked-in || !pressure-ok-in
 #
 # lut5.py -n3 '(not i0) | (not i1) | (not i2)
 # expression = (not i0) | (not i1) | (not i2)
@@ -83,40 +120,51 @@ net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
 # 7:  0  0  1  1  1  0
 # setp lut5.N.function 0x7f
 
-loadrt lut5 count=1 #names=spindleInhibit
+loadrt lut5 count=2 #names=spindleInhibit
 addf lut5.0 servo-thread
+addf lut5.1 servo-thread
 
 setp lut5.0.function 0x7f
-net spindle-temp-ok => lut5.0.in-0
-net spindle-collet-locked => lut5.0.in-1
-net pressure-ok => lut5.0.in-2
+net spindle-temp-ok-in => lut5.0.in-0
+net spindle-collet-locked-in => lut5.0.in-1
+net pressure-ok-in => lut5.0.in-2
 
 net spindle-inhibit spindle.0.inhibit <= lut5.0.out
 
+# Tool-release rules
+#
+# spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok && (program-open-collet || spindle-button-press-in)
+
+setp lut5.1.function 0x80808000
+
+net spindle-zero-speed-in => lut5.1.in-0
+net program-idle => lut5.1.in-1
+net pressure-ok-in => lut5.1.in-2
+net program-open-collet => lut5.1.in-3
+net spindle-button-in => lut5.1.in-4
+
+net spindle-open-collet-out <= lut5.1.out
+
 # Ladder
 
-loadrt classicladder_rt
-addf classicladder.0.refresh servo-thread
-
-loadusr classicladder ladder.clp
-
-
-net temp-ok => classicladder.0.in-00
-net collet-open => classicladder.0.in-01
-net collet-locked => classicladder.0.in-02
-net spindle-button => classicladder.0.in-03
+# loadrt classicladder_rt
+# addf classicladder.0.refresh servo-thread
+# 
+# loadusr classicladder ladder.clp
+# 
+# 
+# net temp-ok => classicladder.0.in-00
+# net collet-open => classicladder.0.in-01
+# net collet-locked => classicladder.0.in-02
+# net spindle-button => classicladder.0.in-03
 
 # The open-collet command signal
 
-net digital-out-open-collet classicladder.0.out-00 => hm2_7i76e.0.7i76.0.0.output-06
+# net digital-out-open-collet classicladder.0.out-00 => hm2_7i76e.0.7i76.0.0.output-06
 
-# Purge air
 
-net digital-out-purge-air => hm2_7i76e.0.7i76.0.0.output-07
 
 #
 # Notes
 #
 
-# motion.digital-out-02 is m64/m65 p2
-# motion.digital-out-03 is m64/m65 p3
