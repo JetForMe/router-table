@@ -13,6 +13,13 @@ loadrt constant count=2
 addf constant.0 servo-thread
 addf constant.1 servo-thread
 
+loadrt lut5 count=3 #names=spindleInhibit
+addf lut5.0 servo-thread
+addf lut5.1 servo-thread
+addf lut5.2 servo-thread
+
+
+
 setp constant.0.value 0
 setp constant.1.value 1
 
@@ -74,6 +81,19 @@ net spindle-collet-open-in <= debounce.0.1.out
 net spindle-collet-locked-in-raw => debounce.0.2.in
 net spindle-collet-locked-in <= debounce.0.2.out
 
+# Purge Air
+#
+# spindle-purge-air-out = program-purge-air || !spindle-zero-speed-in
+
+setp lut5.2.function 0xB
+
+net program-purge-air => lut5.2.in-0
+net spindle-zero-speed-in => lut5.2.in-1
+
+net spindle-purge-air-out => lut5.2.out
+
+
+
 #
 # Spindle
 #
@@ -122,22 +142,21 @@ net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
 #
 #	This doesn't work. I really need m3/m4 to be *prevented* if certain conditions aren't met.
 
-loadrt lut5 count=2 #names=spindleInhibit
-addf lut5.0 servo-thread
-addf lut5.1 servo-thread
-
 setp lut5.0.function 0x7f
 net spindle-temp-ok-in => lut5.0.in-0
 net spindle-collet-locked-in => lut5.0.in-1
 net pressure-ok-in => lut5.0.in-2
 
-net spindle-off halui.spindle.0.stop <= lut5.0.out
+net spindle-off spindle.0.inhibit <= lut5.0.out
 
 # Tool-release rules
 #
 # spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok-in && (program-open-collet || spindle-button-press-in)
 #
 #	Shit, this doesn't work. If you command m64 p2 while the spindle is running, then stop it, the tool is released.
+#
+#	Something else wrong: if the spindle is on with no tool locked, pressing the button or issuing m64 p2 causes purge air,
+#	and it cycles that on and off, along with the collet (although it never manages to open fully).
 
 setp lut5.1.function 0x80808000
 
