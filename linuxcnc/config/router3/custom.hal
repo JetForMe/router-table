@@ -119,6 +119,8 @@ net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
 # 6:  0  0  1  1  0  1   0x40
 # 7:  0  0  1  1  1  0
 # setp lut5.N.function 0x7f
+#
+#	This doesn't work. I really need m3/m4 to be *prevented* if certain conditions aren't met.
 
 loadrt lut5 count=2 #names=spindleInhibit
 addf lut5.0 servo-thread
@@ -129,11 +131,13 @@ net spindle-temp-ok-in => lut5.0.in-0
 net spindle-collet-locked-in => lut5.0.in-1
 net pressure-ok-in => lut5.0.in-2
 
-net spindle-inhibit spindle.0.inhibit <= lut5.0.out
+net spindle-off halui.spindle.0.stop <= lut5.0.out
 
 # Tool-release rules
 #
-# spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok && (program-open-collet || spindle-button-press-in)
+# spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok-in && (program-open-collet || spindle-button-press-in)
+#
+#	Shit, this doesn't work. If you command m64 p2 while the spindle is running, then stop it, the tool is released.
 
 setp lut5.1.function 0x80808000
 
