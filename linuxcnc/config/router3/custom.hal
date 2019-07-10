@@ -49,6 +49,11 @@ net spindle-collet-locked-in-raw <= hm2_7i76e.0.7i76.0.0.input-06
 net spindle-zero-speed-in <= hm2_7i76e.0.7i76.0.0.input-23
 net spindle-at-speed-in <= hm2_7i76e.0.7i76.0.0.input-22
 
+net x-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-28-not
+net y1-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-29-not
+net y2-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-30-not
+net z-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-31-not
+
 #
 # Program Inputs (commands)
 #
@@ -64,6 +69,11 @@ net program-purge-air <= motion.digital-out-03			# m64/m65 p3
 
 net spindle-open-collet-out => hm2_7i76e.0.7i76.0.0.output-06
 net spindle-purge-air-out => hm2_7i76e.0.7i76.0.0.output-07
+
+# net x-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-08
+# net y1-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-09
+# net y2-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-10
+# net z-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-11
 
 # Debounce spindle-button-in-raw, spindle-collet-open-in-raw, spindle-collet-locked-in-raw
 
@@ -107,6 +117,23 @@ net spindle-speed-DAC scale.0.out => hm2_7i76e.0.7i76.0.0.spinout
 net spindle-fwd spindle.0.reverse => hm2_7i76e.0.7i76.0.0.spindir
 
 # net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
+
+## Axis enable and fault connections
+
+# net x-axis-enable-out-raw <= joint.0.amp-enable-out
+# net y1-axis-enable-out-raw <= joint.1.amp-enable-out
+# net y2-axis-enable-out-raw <= joint.2.amp-enable-out
+# net z-axis-enable-out-raw <= joint.3.amp-enable-out
+
+net emcmot.0.enable => hm2_7i76e.0.7i76.0.0.output-08
+net emcmot.1.enable => hm2_7i76e.0.7i76.0.0.output-09
+net emcmot.2.enable => hm2_7i76e.0.7i76.0.0.output-10
+net emcmot.3.enable => hm2_7i76e.0.7i76.0.0.output-11
+
+# net x-axis-hlfb-in-raw => joint.0.amp-fault-in
+# net y1-axis-hlfb-in-raw => joint.1.amp-fault-in
+# net y2-axis-hlfb-in-raw => joint.2.amp-fault-in
+# net z-axis-hlfb-in-raw => joint.3.amp-fault-in
 
 ## Spindle Speed
 #
