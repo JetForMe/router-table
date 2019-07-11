@@ -49,10 +49,11 @@ net spindle-collet-locked-in-raw <= hm2_7i76e.0.7i76.0.0.input-06
 net spindle-zero-speed-in <= hm2_7i76e.0.7i76.0.0.input-23
 net spindle-at-speed-in <= hm2_7i76e.0.7i76.0.0.input-22
 
-net x-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-28-not
-net y1-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-29-not
-net y2-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-30-not
-net z-axis-hlfb-in-raw <= hm2_7i76e.0.7i76.0.0.input-31-not
+alias pin hm2_7i76e.0.7i76.0.0.input-28-not x-axis-hlfb-in-raw
+
+alias pin hm2_7i76e.0.7i76.0.0.input-29-not y1-axis-hlfb-in-raw
+alias pin hm2_7i76e.0.7i76.0.0.input-30-not y2-axis-hlfb-in-raw
+alias pin hm2_7i76e.0.7i76.0.0.input-31-not z-axis-hlfb-in-raw 
 
 #
 # Program Inputs (commands)
