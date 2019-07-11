@@ -1,3 +1,5 @@
 # Place any HAL commands in this file that you want to run AFTER the GUI finishes loading.
 # GUI HAL pins are not visible until after the GUI loads.
 # This file will not be written over by the configuration tool.
+
+net e-stop-active <= halui.estop.is−activated
