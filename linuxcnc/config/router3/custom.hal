@@ -61,6 +61,9 @@ net spindle-at-speed-in				<= hm2_7i76e.0.7i76.0.0.input-22
 net spindle-open-collet-out			=> hm2_7i76e.0.7i76.0.0.output-06
 net spindle-purge-air-out			=> hm2_7i76e.0.7i76.0.0.output-07
 
+alias pin	hm2_7i76e.0.7i76.0.0.spinena			spindle-enable-out
+alias pin	hm2_7i76e.0.7i76.0.0.output-05			spindle-fan-on-out
+
 #
 #	Servo Pins
 #
@@ -78,9 +81,6 @@ alias pin hm2_7i76e.0.7i76.0.0.input-28-not			servo-fault-in-x
 alias pin hm2_7i76e.0.7i76.0.0.input-29-not			servo-fault-in-y1
 alias pin hm2_7i76e.0.7i76.0.0.input-30-not			servo-fault-in-y2
 alias pin hm2_7i76e.0.7i76.0.0.input-31-not			servo-fault-in-z 
-
-
-
 
 # Debouncers
 #
@@ -151,7 +151,8 @@ net spindle-at-speed-in => spindle.0.at-speed
 
 # Spindle enable/inhibit
 
-net spindle-enable spindle.0.on => hm2_7i76e.0.7i76.0.0.spinena
+net spindle-enable spindle.0.on						=> spindle-enable-out
+net spindle-enable									=> spindle-fan-on-out
 
 # spindle-inhibit = !spindle-temp-ok-in || !spindle-collet-locked-in || !pressure-ok-in
 #
