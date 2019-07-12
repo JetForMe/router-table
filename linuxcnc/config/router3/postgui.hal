@@ -2,4 +2,24 @@
 # GUI HAL pins are not visible until after the GUI loads.
 # This file will not be written over by the configuration tool.
 
-net e-stop-active <= halui.estop.is−activated
+#
+# Program Inputs (commands)
+#
+
+net program-idle									<= halui.program.is-idle
+net program-open-collet								<= motion.digital-out-02		# m64/m65 p2
+net program-purge-air								<= motion.digital-out-03		# m64/m65 p3
+
+#	Invert the halui e-stop, and feed that to
+#	the servo enable pins…
+
+net e-stop-active									<= halui.estop.is-activated
+net e-stop-active									=> not.0.in
+net e-stop-active-not								<= not.0.out
+
+net e-stop-active-not								=> servo-enable-x
+net e-stop-active-not								=> servo-enable-y1
+net e-stop-active-not								=> servo-enable-y2
+net e-stop-active-not								=> servo-enable-z
+
+

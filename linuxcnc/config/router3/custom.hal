@@ -1,6 +1,13 @@
 # Place any HAL commands in this file that you want to run before the GUI.
 # This file will not be written over by the configuration tool.
 
+#
+#	RS-485 Control of VFD
+#
+
+# loadusr -Wn vfdb_vfd
+
+
 # System Pneumatic Pressure
 #
 # We don't have a pressure-ok sensor yet, so
@@ -44,76 +51,56 @@ net pressure-ok-in <= near.1.out
 #	Spindle Pins
 #
 
-net spindle-button-in-raw <= hm2_7i76e.0.7i76.0.0.input-07
-net spindle-temp-ok-in <= hm2_7i76e.0.7i76.0.0.input-04
-net spindle-collet-open-in-raw <= hm2_7i76e.0.7i76.0.0.input-05
-net spindle-collet-locked-in-raw <= hm2_7i76e.0.7i76.0.0.input-06
-net spindle-zero-speed-in <= hm2_7i76e.0.7i76.0.0.input-23
-net spindle-at-speed-in <= hm2_7i76e.0.7i76.0.0.input-22
+net spindle-button-in-raw			<= hm2_7i76e.0.7i76.0.0.input-07
+net spindle-temp-ok-in				<= hm2_7i76e.0.7i76.0.0.input-04
+net spindle-collet-open-in-raw		<= hm2_7i76e.0.7i76.0.0.input-05
+net spindle-collet-locked-in-raw	<= hm2_7i76e.0.7i76.0.0.input-06
+net spindle-zero-speed-in			<= hm2_7i76e.0.7i76.0.0.input-23
+net spindle-at-speed-in				<= hm2_7i76e.0.7i76.0.0.input-22
 
-net spindle-open-collet-out => hm2_7i76e.0.7i76.0.0.output-06
-net spindle-purge-air-out => hm2_7i76e.0.7i76.0.0.output-07
-
-alias pin hm2_7i76e.0.7i76.0.0.input-28-not x-axis-hlfb-in-raw
-
-alias pin hm2_7i76e.0.7i76.0.0.input-29-not y1-axis-hlfb-in-raw
-alias pin hm2_7i76e.0.7i76.0.0.input-30-not y2-axis-hlfb-in-raw
-alias pin hm2_7i76e.0.7i76.0.0.input-31-not z-axis-hlfb-in-raw 
+net spindle-open-collet-out			=> hm2_7i76e.0.7i76.0.0.output-06
+net spindle-purge-air-out			=> hm2_7i76e.0.7i76.0.0.output-07
 
 #
 #	Servo Pins
 #
 
-alias pin hm2_7i76e.0.7i76.0.0.output-08 axis-enable-x
-alias pin hm2_7i76e.0.7i76.0.0.output-09 axis-enable-y1
-alias pin hm2_7i76e.0.7i76.0.0.output-10 axis-enable-y2
-alias pin hm2_7i76e.0.7i76.0.0.output-11 axis-enable-z
+#	Enable Pins
 
-#
-# Program Inputs (commands)
-#
+alias pin hm2_7i76e.0.7i76.0.0.output-08			servo-enable-x
+alias pin hm2_7i76e.0.7i76.0.0.output-09			servo-enable-y1
+alias pin hm2_7i76e.0.7i76.0.0.output-10			servo-enable-y2
+alias pin hm2_7i76e.0.7i76.0.0.output-11			servo-enable-z
 
-net program-idle <= halui.program.is-idle
-net program-open-collet <= motion.digital-out-02		# m64/m65 p2
-net program-purge-air <= motion.digital-out-03			# m64/m65 p3
+#	Servo fault (HLFB, high-level feedback, high when "position good")
 
-# net e-stop-active <= halui.estop.is−activated
-# net e-stop-active => not.0.in
-# net e-stop-active-not <= not.0.out
-# net e-stop-active-not => enable-axis-x
-# net e-stop-active-not => enable-axis-y1
-# net e-stop-active-not => enable-axis-y2
-# net e-stop-active-not => enable-axis-z
+alias pin hm2_7i76e.0.7i76.0.0.input-28-not			servo-fault-in-x
+alias pin hm2_7i76e.0.7i76.0.0.input-29-not			servo-fault-in-y1
+alias pin hm2_7i76e.0.7i76.0.0.input-30-not			servo-fault-in-y2
+alias pin hm2_7i76e.0.7i76.0.0.input-31-not			servo-fault-in-z 
 
-#
-#	Outputs
-#
 
-# net x-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-08
-# net y1-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-09
-# net y2-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-10
-# net z-axis-enable-out-raw => hm2_7i76e.0.7i76.0.0.output-11
+
 
 # Debouncers
 #
 #	Group 1: Debounce the spindle button and tool holder sensors
-#	Group 2: Delay the enable signal to keep the HLFB "good" a bit after machine turn on
 
-loadrt debounce cfg=3,4
+loadrt debounce cfg=3
 addf debounce.0 servo-thread
 
 # Debounce spindle-button-in-raw, spindle-collet-open-in-raw, spindle-collet-locked-in-raw
 
 setp debounce.0.delay 4
 
-net spindle-button-in-raw => debounce.0.0.in
-net spindle-button-in <= debounce.0.0.out
+net spindle-button-in-raw							=> debounce.0.0.in
+net spindle-button-in								<= debounce.0.0.out
 
-net spindle-collet-open-in-raw => debounce.0.1.in
-net spindle-collet-open-in <= debounce.0.1.out
+net spindle-collet-open-in-raw						=> debounce.0.1.in
+net spindle-collet-open-in							<= debounce.0.1.out
 
-net spindle-collet-locked-in-raw => debounce.0.2.in
-net spindle-collet-locked-in <= debounce.0.2.out
+net spindle-collet-locked-in-raw					=> debounce.0.2.in
+net spindle-collet-locked-in						<= debounce.0.2.out
 
 # Purge Air
 #
@@ -135,29 +122,19 @@ net spindle-purge-air-out => lut5.2.out
 loadrt scale count=1
 addf scale.0 servo-thread
 setp scale.0.gain 0.00416667
-net spindle-speed-scale spindle.0.speed-out-abs => scale.0.in
-net spindle-speed-DAC scale.0.out => hm2_7i76e.0.7i76.0.0.spinout
+net spindle-speed-scale spindle.0.speed-out-abs		=> scale.0.in
+net spindle-speed-DAC scale.0.out					=> hm2_7i76e.0.7i76.0.0.spinout
 
-net spindle-fwd spindle.0.reverse => hm2_7i76e.0.7i76.0.0.spindir
+net spindle-fwd spindle.0.reverse					=> hm2_7i76e.0.7i76.0.0.spindir
 
-# net spindle-button <= hm2_7i76e.0.7i76.0.0.input-07
+# net spindle-button								<= hm2_7i76e.0.7i76.0.0.input-07
 
-## Axis enable and fault connections
+## Axis fault connections
 
-# net x-axis-enable-out-raw <= joint.0.amp-enable-out
-# net y1-axis-enable-out-raw <= joint.1.amp-enable-out
-# net y2-axis-enable-out-raw <= joint.2.amp-enable-out
-# net z-axis-enable-out-raw <= joint.3.amp-enable-out
-
-net emcmot.0.enable => hm2_7i76e.0.7i76.0.0.output-08
-net emcmot.1.enable => hm2_7i76e.0.7i76.0.0.output-09
-net emcmot.2.enable => hm2_7i76e.0.7i76.0.0.output-10
-net emcmot.3.enable => hm2_7i76e.0.7i76.0.0.output-11
-
-# net x-axis-hlfb-in-raw => joint.0.amp-fault-in
-# net y1-axis-hlfb-in-raw => joint.1.amp-fault-in
-# net y2-axis-hlfb-in-raw => joint.2.amp-fault-in
-# net z-axis-hlfb-in-raw => joint.3.amp-fault-in
+net axis-fault-x	servo-fault-in-x				=> joint.0.amp-fault-in
+net axis-fault-y1	servo-fault-in-y1				=> joint.1.amp-fault-in
+net axis-fault-y2	servo-fault-in-y2				=> joint.2.amp-fault-in
+net axis-fault-z	servo-fault-in-z				=> joint.3.amp-fault-in
 
 ## Spindle Speed
 #
@@ -211,13 +188,13 @@ net spindle-off spindle.0.inhibit <= lut5.0.out
 
 setp lut5.1.function 0x80808000
 
-net spindle-zero-speed-in => lut5.1.in-0
-net program-idle => lut5.1.in-1
-net pressure-ok-in => lut5.1.in-2
-net program-open-collet => lut5.1.in-3
-net spindle-button-in => lut5.1.in-4
+net spindle-zero-speed-in							=> lut5.1.in-0
+net program-idle									=> lut5.1.in-1
+net pressure-ok-in									=> lut5.1.in-2
+net program-open-collet								=> lut5.1.in-3
+net spindle-button-in								=> lut5.1.in-4
 
-net spindle-open-collet-out <= lut5.1.out
+net spindle-open-collet-out							<= lut5.1.out
 
 # Ladder
 
@@ -227,14 +204,14 @@ net spindle-open-collet-out <= lut5.1.out
 # loadusr classicladder ladder.clp
 # 
 # 
-# net temp-ok => classicladder.0.in-00
-# net collet-open => classicladder.0.in-01
-# net collet-locked => classicladder.0.in-02
-# net spindle-button => classicladder.0.in-03
+# net temp-ok										=> classicladder.0.in-00
+# net collet-open									=> classicladder.0.in-01
+# net collet-locked									=> classicladder.0.in-02
+# net spindle-button								=> classicladder.0.in-03
 
 # The open-collet command signal
 
-# net digital-out-open-collet classicladder.0.out-00 => hm2_7i76e.0.7i76.0.0.output-06
+# net digital-out-open-collet classicladder.0.out-00	=> hm2_7i76e.0.7i76.0.0.output-06
 
 
 
