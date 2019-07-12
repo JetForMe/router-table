@@ -28,6 +28,8 @@ addf lut5.2 servo-thread
 loadrt not count=1
 addf not.0 servo-thread
 
+loadrt timedelay names=spindleFanDelay
+addf spindleFanDelay servo-thread
 
 setp constant.0.value 0
 setp constant.1.value 1
@@ -152,7 +154,12 @@ net spindle-at-speed-in => spindle.0.at-speed
 # Spindle enable/inhibit
 
 net spindle-enable spindle.0.on						=> spindle-enable-out
-net spindle-enable									=> spindle-fan-on-out
+
+#	Spindle fan (on with spindle, off after delay)
+
+setp spindleFanDelay.off-delay						60.0						#	Run for at least a minute
+net spindle-enable									=> spindleFanDelay.in
+net spindle-fan-delay	spindleFanDelay.out			=> spindle-fan-on-out
 
 # spindle-inhibit = !spindle-temp-ok-in || !spindle-collet-locked-in || !pressure-ok-in
 #
