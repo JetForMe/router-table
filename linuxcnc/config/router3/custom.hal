@@ -7,6 +7,30 @@
 
 # loadusr -Wn vfdb_vfd
 
+#
+#	Contour ShuttleXpress
+#
+
+#loadusr -W shuttle
+
+#net select-axis-x		halui.joint.0.select									<=	shuttlexpress.0.button-0
+#net select-axis-y		halui.joint.1.select									<=	shuttlexpress.0.button-1
+#net select-axis-z		halui.joint.3.select									<=	shuttlexpress.0.button-2
+#net sxp.continuous																<=	shuttlexpress.0.spring-wheel-s32
+
+# loadrt comp names=compJog
+# addf compJog servo-thread
+# 
+# setp compJog.in0	0
+# net sxp.continuous			=>	compJog.in1
+# net jog-not					<=	compJog.out
+# 
+# loadrt not names=notJog
+# addf notJog servo-thread
+# net jog-not					=>	notJog.in
+# net jog						<=	notJog.out
+# 
+# halui.0.jog
 
 # System Pneumatic Pressure
 #

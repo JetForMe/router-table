@@ -2,6 +2,7 @@
 # GUI HAL pins are not visible until after the GUI loads.
 # This file will not be written over by the configuration tool.
 
+
 #
 # Program Inputs (commands)
 #
