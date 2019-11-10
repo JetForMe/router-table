@@ -1,3 +1,8 @@
 router3.var
 *.bak
+tool.tbl
+tool.tbl.bak
+autosave.halscope
+router3.old.old/
+router3.old/
 
