@@ -15,8 +15,8 @@ net program-purge-air								<= motion.digital-out-03		# m64/m65 p3
 #	the servo enable pins…
 
 net e-stop-active									<= halui.estop.is-activated
-net e-stop-active									=> not.0.in
-net e-stop-active-not								<= not.0.out
+net e-stop-active									=> notEstop.in
+net e-stop-active-not								<= notEstop.out
 
 net e-stop-active-not								=> servo-enable-x
 net e-stop-active-not								=> servo-enable-y1

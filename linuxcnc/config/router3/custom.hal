@@ -11,26 +11,30 @@
 #	Contour ShuttleXpress
 #
 
-#loadusr -W shuttle
+loadusr -W shuttle
 
-#net select-axis-x		halui.joint.0.select									<=	shuttlexpress.0.button-0
-#net select-axis-y		halui.joint.1.select									<=	shuttlexpress.0.button-1
-#net select-axis-z		halui.joint.3.select									<=	shuttlexpress.0.button-2
-#net sxp.continuous																<=	shuttlexpress.0.spring-wheel-s32
+#loadrt milljogtranslator names=milljogtranslator
+#addf milljogtranslator servo-thread
 
-# loadrt comp names=compJog
-# addf compJog servo-thread
-# 
-# setp compJog.in0	0
-# net sxp.continuous			=>	compJog.in1
-# net jog-not					<=	compJog.out
-# 
-# loadrt not names=notJog
-# addf notJog servo-thread
-# net jog-not					=>	notJog.in
-# net jog						<=	notJog.out
-# 
-# halui.0.jog
+net select-axis-x		halui.joint.0.select									<=	shuttlexpress.0.button-0
+net select-axis-y		halui.joint.1.select									<=	shuttlexpress.0.button-1
+net select-axis-z		halui.joint.3.select									<=	shuttlexpress.0.button-2
+net sxp.continuous																<=	shuttlexpress.0.spring-wheel-s32
+
+loadrt comp names=compJog
+addf compJog servo-thread
+
+setp compJog.in0	0
+#net sxp.continuous			=>	compJog.in1
+net jog-not					<=	compJog.out
+
+loadrt not names=notJog,notEstop
+addf notEstop servo-thread
+addf notJog servo-thread
+net jog-not					=>	notJog.in
+net jog						<=	notJog.out
+
+#halui.0.jog
 
 # System Pneumatic Pressure
 #
@@ -49,8 +53,6 @@ addf lut5.0 servo-thread
 addf lut5.1 servo-thread
 addf lut5.2 servo-thread
 
-loadrt not count=1
-addf not.0 servo-thread
 
 loadrt timedelay names=spindleFanDelay
 addf spindleFanDelay servo-thread
@@ -187,7 +189,7 @@ net spindle-fan-delay	spindleFanDelay.out			=> spindle-fan-on-out
 
 # spindle-inhibit = !spindle-temp-ok-in || !spindle-collet-locked-in || !pressure-ok-in
 #
-# lut5.py -n3 '(not i0) | (not i1) | (not i2)
+# lut5.py -n3 '(not i0) | (not i1) | (not i2)'
 # expression = (not i0) | (not i1) | (not i2)
 #in: i4 i3 i2 i1 i0 out weight
 # 0:  0  0  0  0  0  1   0x1
@@ -211,18 +213,30 @@ net spindle-off spindle.0.inhibit <= lut5.0.out
 
 # Tool-release rules
 #
-# spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok-in && (program-open-collet || spindle-button-press-in)
+# spindle-open-collet-out = spindle-zero-speed-in
+#							&& (program-idle || tool-prepare)
+#							&& pressure-ok-in
+#							&& (program-open-collet || spindle-button-press-in)
+#
+# spindle-open-collet-out = spindle-zero-speed-in
+#							&& (program-idle || tool-prepare)
+#							&& (program-open-collet || spindle-button-press-in)
+# lut5.py -n5 'i0 & (i1 | i2) & (i3 | i4)'
+#							
+#
 #
 #	Shit, this doesn't work. If you command m64 p2 while the spindle is running, then stop it, the tool is released.
 #
 #	Something else wrong: if the spindle is on with no tool locked, pressing the button or issuing m64 p2 causes purge air,
 #	and it cycles that on and off, along with the collet (although it never manages to open fully).
 
-setp lut5.1.function 0x80808000
+# setp lut5.1.function 0x80808000
+setp lut5.1.function 0xa8a8a800
 
 net spindle-zero-speed-in							=> lut5.1.in-0
 net program-idle									=> lut5.1.in-1
-net pressure-ok-in									=> lut5.1.in-2
+#net pressure-ok-in									=> lut5.1.in-2
+net tool-change										=> lut5.1.in-2
 net program-open-collet								=> lut5.1.in-3
 net spindle-button-in								=> lut5.1.in-4
 
