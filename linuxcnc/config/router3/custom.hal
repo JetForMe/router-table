@@ -13,26 +13,60 @@
 
 loadusr -W shuttle
 
+loadrt conv_s32_float names=jogWheelToFloat
+addf jogWheelToFloat servo-thread
+
+loadrt abs names=absContJog
+addf absContJog servo-thread
+
+loadrt lincurve names=jogCurve personality=8
+addf jogCurve servo-thread
+
+setp jogCurve.x-val-00 0
+setp jogCurve.y-val-00 0
+setp jogCurve.x-val-01 1
+setp jogCurve.y-val-01 50
+setp jogCurve.x-val-02 2
+setp jogCurve.y-val-02 400
+setp jogCurve.x-val-03 3
+setp jogCurve.y-val-03 1125
+setp jogCurve.x-val-04 4
+setp jogCurve.y-val-04 3250
+setp jogCurve.x-val-05 5
+setp jogCurve.y-val-05 7500
+setp jogCurve.x-val-06 6
+setp jogCurve.y-val-06 15000
+setp jogCurve.x-val-07 7
+setp jogCurve.y-val-07 30000
+
 #loadrt milljogtranslator names=milljogtranslator
 #addf milljogtranslator servo-thread
 
-net select-axis-x		halui.joint.0.select									<=	shuttlexpress.0.button-0
-net select-axis-y		halui.joint.1.select									<=	shuttlexpress.0.button-1
-net select-axis-z		halui.joint.3.select									<=	shuttlexpress.0.button-2
-net sxp.continuous																<=	shuttlexpress.0.spring-wheel-s32
+net select-axis-x		halui.axis.x.select										<=	shuttle.0.button-1
+net select-axis-y		halui.axis.y.select										<=	shuttle.0.button-2
+net select-axis-z		halui.axis.z.select										<=	shuttle.0.button-3
+net sxp.continuousInt	jogWheelToFloat.in										<=	shuttle.0.spring-wheel-s32
+net sxp.continuousF		absContJog.in											<=	jogWheelToFloat.out
+net sxp.absContinuousF	jogCurve.in												<=	absContJog.out	
 
-loadrt comp names=compJog
-addf compJog servo-thread
+net jogSpeed			halui.axis.jog-speed									<= jogCurve.out
+net jogPlus				halui.axis.selected.plus								<= absContJog.is-positive
+net jogMinus			halui.axis.selected.minus								<= absContJog.is-negative
 
-setp compJog.in0	0
-#net sxp.continuous			=>	compJog.in1
-net jog-not					<=	compJog.out
 
-loadrt not names=notJog,notEstop
+# loadrt comp names=compJog
+# addf compJog servo-thread
+# 
+# setp compJog.in0	0
+# net sxp.continuous			=>	compJog.in1
+# net jog-not					<=	compJog.out
+# 
+loadrt not names=notEstop
 addf notEstop servo-thread
-addf notJog servo-thread
-net jog-not					=>	notJog.in
-net jog						<=	notJog.out
+# loadrt not names=notJog,notEstop
+# addf notJog servo-thread
+# net jog-not					=>	notJog.in
+# net jog						<=	notJog.out
 
 #halui.0.jog
 
