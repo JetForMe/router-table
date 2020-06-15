@@ -11,12 +11,48 @@
 #	Contour ShuttleXpress
 #
 
-#loadusr -W shuttle
+loadusr -W shuttle
 
-#net select-axis-x		halui.joint.0.select									<=	shuttlexpress.0.button-0
-#net select-axis-y		halui.joint.1.select									<=	shuttlexpress.0.button-1
-#net select-axis-z		halui.joint.3.select									<=	shuttlexpress.0.button-2
-#net sxp.continuous																<=	shuttlexpress.0.spring-wheel-s32
+loadrt conv_s32_float names=jogWheelToFloat
+addf jogWheelToFloat servo-thread
+
+loadrt abs names=absContJog
+addf absContJog servo-thread
+
+loadrt lincurve names=jogCurve personality=8
+addf jogCurve servo-thread
+
+setp jogCurve.x-val-00 0
+setp jogCurve.y-val-00 0
+setp jogCurve.x-val-01 1
+setp jogCurve.y-val-01 50
+setp jogCurve.x-val-02 2
+setp jogCurve.y-val-02 400
+setp jogCurve.x-val-03 3
+setp jogCurve.y-val-03 1125
+setp jogCurve.x-val-04 4
+setp jogCurve.y-val-04 3250
+setp jogCurve.x-val-05 5
+setp jogCurve.y-val-05 7500
+setp jogCurve.x-val-06 6
+setp jogCurve.y-val-06 15000
+setp jogCurve.x-val-07 7
+setp jogCurve.y-val-07 30000
+
+#loadrt milljogtranslator names=milljogtranslator
+#addf milljogtranslator servo-thread
+
+net select-axis-x		halui.axis.x.select										<=	shuttle.0.button-1
+net select-axis-y		halui.axis.y.select										<=	shuttle.0.button-2
+net select-axis-z		halui.axis.z.select										<=	shuttle.0.button-3
+net sxp.continuousInt	jogWheelToFloat.in										<=	shuttle.0.spring-wheel-s32
+net sxp.continuousF		absContJog.in											<=	jogWheelToFloat.out
+net sxp.absContinuousF	jogCurve.in												<=	absContJog.out	
+
+net jogSpeed			halui.axis.jog-speed									<= jogCurve.out
+net jogPlus				halui.axis.selected.plus								<= absContJog.is-positive
+net jogMinus			halui.axis.selected.minus								<= absContJog.is-negative
+
 
 # loadrt comp names=compJog
 # addf compJog servo-thread
@@ -25,12 +61,14 @@
 # net sxp.continuous			=>	compJog.in1
 # net jog-not					<=	compJog.out
 # 
-# loadrt not names=notJog
+loadrt not names=notEstop
+addf notEstop servo-thread
+# loadrt not names=notJog,notEstop
 # addf notJog servo-thread
 # net jog-not					=>	notJog.in
 # net jog						<=	notJog.out
-# 
-# halui.0.jog
+
+#halui.0.jog
 
 # System Pneumatic Pressure
 #
@@ -49,8 +87,6 @@ addf lut5.0 servo-thread
 addf lut5.1 servo-thread
 addf lut5.2 servo-thread
 
-loadrt not count=1
-addf not.0 servo-thread
 
 loadrt timedelay names=spindleFanDelay
 addf spindleFanDelay servo-thread
@@ -187,7 +223,7 @@ net spindle-fan-delay	spindleFanDelay.out			=> spindle-fan-on-out
 
 # spindle-inhibit = !spindle-temp-ok-in || !spindle-collet-locked-in || !pressure-ok-in
 #
-# lut5.py -n3 '(not i0) | (not i1) | (not i2)
+# lut5.py -n3 '(not i0) | (not i1) | (not i2)'
 # expression = (not i0) | (not i1) | (not i2)
 #in: i4 i3 i2 i1 i0 out weight
 # 0:  0  0  0  0  0  1   0x1
@@ -211,18 +247,30 @@ net spindle-off spindle.0.inhibit <= lut5.0.out
 
 # Tool-release rules
 #
-# spindle-open-collet-out = spindle-zero-speed-in && program-idle && pressure-ok-in && (program-open-collet || spindle-button-press-in)
+# spindle-open-collet-out = spindle-zero-speed-in
+#							&& (program-idle || tool-prepare)
+#							&& pressure-ok-in
+#							&& (program-open-collet || spindle-button-press-in)
+#
+# spindle-open-collet-out = spindle-zero-speed-in
+#							&& (program-idle || tool-prepare)
+#							&& (program-open-collet || spindle-button-press-in)
+# lut5.py -n5 'i0 & (i1 | i2) & (i3 | i4)'
+#							
+#
 #
 #	Shit, this doesn't work. If you command m64 p2 while the spindle is running, then stop it, the tool is released.
 #
 #	Something else wrong: if the spindle is on with no tool locked, pressing the button or issuing m64 p2 causes purge air,
 #	and it cycles that on and off, along with the collet (although it never manages to open fully).
 
-setp lut5.1.function 0x80808000
+# setp lut5.1.function 0x80808000
+setp lut5.1.function 0xa8a8a800
 
 net spindle-zero-speed-in							=> lut5.1.in-0
 net program-idle									=> lut5.1.in-1
-net pressure-ok-in									=> lut5.1.in-2
+#net pressure-ok-in									=> lut5.1.in-2
+net tool-change										=> lut5.1.in-2
 net program-open-collet								=> lut5.1.in-3
 net spindle-button-in								=> lut5.1.in-4
 
