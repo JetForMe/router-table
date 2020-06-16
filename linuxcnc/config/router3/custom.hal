@@ -144,6 +144,13 @@ alias pin hm2_7i76e.0.7i76.0.0.input-29-not			servo-fault-in-y1
 alias pin hm2_7i76e.0.7i76.0.0.input-30-not			servo-fault-in-y2
 alias pin hm2_7i76e.0.7i76.0.0.input-31-not			servo-fault-in-z 
 
+#
+#	Tool Setter
+#
+
+alias pin hm2_7i76e.0.7i76.0.0.input-14-not			toolsetter-in
+
+
 # Debouncers
 #
 #	Group 1: Debounce the spindle button and tool holder sensors

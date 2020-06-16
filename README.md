@@ -18,3 +18,6 @@ More complicated is dealing with the brush depth. The tool clip ends up _very_ c
 The middle tool clip appears to be at absolute coordinates x = 973.5, y = 2741.0, z = -108.0. The y-clearance position is about y = 2700. Note that axis 2 and 3 steppers were tripping the HLFB (“amplifier fault”), which means the z axis was probably pushing down too hard, and the y-axis was pushing too far toward positive.
 
 The current logic shuts off the collet open command if a move is commanded. We can't have that, but the intent was to not allow the collet to open while the spindle was in motion. Perhaps I can set a “tool change mode” where this restriction is relaxed.
+
+### Toolsetter
+
