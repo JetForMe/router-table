@@ -1,0 +1,23 @@
+o<manual_change> sub
+
+(we change feed, metric/in and potentially G90)
+(so save current modal state)
+(M73 is not useful here because it reverts G43 on return too)
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+G21 (TLO and toolchange position is in mm as per ini)
+G90 (absolute)
+
+; move to toolchange position: z, then xy
+g53 g0 Z #<_ini[manual_tool_change_position]z>
+;g53 g0 X #<_ini[manual_tool_change_position]x> Y #<_ini[manual_tool_change_position]y>
+
+
+; restore g20/21, g90/g91, feed
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+; succeed by returning a positive value
+o<manual_change> endsub [1]
+m2
