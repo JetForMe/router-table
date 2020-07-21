@@ -225,7 +225,7 @@ net spindle-enable spindle.0.on						=> spindle-enable-out
 
 #	Spindle fan (on with spindle, off after delay)
 
-setp spindleFanDelay.off-delay						60.0						#	Run for at least a minute
+setp spindleFanDelay.off-delay						180.0						#	Run for at least a minute
 net spindle-enable									=> spindleFanDelay.in
 net spindle-fan-delay	spindleFanDelay.out			=> spindle-fan-on-out
 
