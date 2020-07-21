@@ -23,4 +23,9 @@ net e-stop-active-not								=> servo-enable-y1
 net e-stop-active-not								=> servo-enable-y2
 net e-stop-active-not								=> servo-enable-z
 
+#	The Z-axis brake is disengaged when energized, so
+#	disengage it when the servos are enabled…
+
+net e-stop-active-not								=> brake-disengage-z
+
 
