@@ -136,10 +136,12 @@ alias pin hm2_7i76e.0.7i76.0.0.output-08			servo-enable-x
 alias pin hm2_7i76e.0.7i76.0.0.output-09			servo-enable-y1
 alias pin hm2_7i76e.0.7i76.0.0.output-10			servo-enable-y2
 alias pin hm2_7i76e.0.7i76.0.0.output-11			servo-enable-z
+alias pin hm2_7i76e.0.7i76.0.0.output-12			servo-enable-a
 alias pin hm2_7i76e.0.7i76.0.0.output-04			brake-disengage-z
 
 #	Servo fault (HLFB, high-level feedback, high when "position good")
 
+alias pin hm2_7i76e.0.7i76.0.0.input-27-not			servo-fault-in-a 
 alias pin hm2_7i76e.0.7i76.0.0.input-28-not			servo-fault-in-x
 alias pin hm2_7i76e.0.7i76.0.0.input-29-not			servo-fault-in-y1
 alias pin hm2_7i76e.0.7i76.0.0.input-30-not			servo-fault-in-y2
