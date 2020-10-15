@@ -200,7 +200,7 @@ setp pid.4.deadband [JOINT_4]DEADBAND
 setp pid.4.maxoutput [JOINT_4]MAX_OUTPUT
 setp pid.4.maxerror [JOINT_4]MAX_ERROR
 
-net max-limit-home-joint-4		joint.4.home-sw-in							<= hm2_7i76e.0.7i76.0.0.input-15-not
+net max-limit-home-joint-4		joint.4.home-sw-in					<= hm2_7i76e.0.7i76.0.0.input-15-not
 
 # Spindle
 #setp hm2_7i76e.0.pwmgen.00.output-type 0
