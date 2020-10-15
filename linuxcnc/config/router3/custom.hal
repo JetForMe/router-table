@@ -45,6 +45,7 @@ setp jogCurve.y-val-07 30000
 net select-axis-x		halui.axis.x.select										<=	shuttle.0.button-1
 net select-axis-y		halui.axis.y.select										<=	shuttle.0.button-2
 net select-axis-z		halui.axis.z.select										<=	shuttle.0.button-3
+net select-axis-a		halui.axis.a.select										<=	shuttle.0.button-4
 net sxp.continuousInt	jogWheelToFloat.in										<=	shuttle.0.spring-wheel-s32
 net sxp.continuousF		absContJog.in											<=	jogWheelToFloat.out
 net sxp.absContinuousF	jogCurve.in												<=	absContJog.out	
@@ -153,6 +154,8 @@ alias pin hm2_7i76e.0.7i76.0.0.input-31-not			servo-fault-in-z
 
 alias pin hm2_7i76e.0.7i76.0.0.input-14-not			toolsetter-in
 
+net toolsetter-probe								<= toolsetter-in
+net toolsetter-probe								=> motion.probe-input
 
 # Debouncers
 #
