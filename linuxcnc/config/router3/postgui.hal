@@ -14,19 +14,28 @@ net program-purge-air								<= motion.digital-out-03		# m64/m65 p3
 #	Invert the halui e-stop, and feed that to
 #	the servo enable pins…
 
-net e-stop-active									<= halui.estop.is-activated
-net e-stop-active									=> notEstop.in
-net e-stop-active-not								<= notEstop.out
+net estop-active									<= halui.estop.is-activated
+net estop-active									=> notEstop.in
+net estop-active-not								<= notEstop.out
 
-net e-stop-active-not								=> servo-enable-x
-net e-stop-active-not								=> servo-enable-y1
-net e-stop-active-not								=> servo-enable-y2
-net e-stop-active-not								=> servo-enable-z
-net e-stop-active-not								=> servo-enable-a
+net estop-active-not								=> servo-enable-x
+net estop-active-not								=> servo-enable-y1
+net estop-active-not								=> servo-enable-y2
+net estop-active-not								=> servo-enable-z
+net estop-active-not								=> servo-enable-a
 
 #	The Z-axis brake is disengaged when energized, so
-#	disengage it when the servos are enabled…
+#	disengage it when the z-axis servo fault output resets.
+#	This keeps the brake from letting go of the z-axis until
+#	the servo is able to hold up the mass of the spindle. We
+#	don't seem to need a delay here; the HLFB output accurately
+#	reflects the servo's ability to hold position. This does,
+#	however, depend on the Teknic SDSK HLFB output being properly
+#	configured.
 
-net e-stop-active-not								=> brake-disengage-z
+net axis-fault-z									=> notZFault.in
+net servo-ok-z										<= notZFault.out
+net servo-ok-z										=> brake-disengage-z
+
 
 

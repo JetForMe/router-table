@@ -62,8 +62,9 @@ net jogMinus			halui.axis.selected.minus								<= absContJog.is-negative
 # net sxp.continuous			=>	compJog.in1
 # net jog-not					<=	compJog.out
 # 
-loadrt not names=notEstop
+loadrt not names=notEstop,notZFault
 addf notEstop servo-thread
+addf notZFault servo-thread
 # loadrt not names=notJog,notEstop
 # addf notJog servo-thread
 # net jog-not					=>	notJog.in
