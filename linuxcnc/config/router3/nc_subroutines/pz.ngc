@@ -1,0 +1,21 @@
+; Probe for toolsetter in z
+; call as 'O<probeZ> call 
+;
+O<pz> sub
+
+G49
+G91
+G21
+G38.2 F200 Z-90		;	Find toolsetter
+G1 F1000 Z1			;	Back off a bit
+G38.2 F50 Z-5		;	Slowly come down on toolsetter
+
+#<_ToolRefZ> = #5063
+(print,new length is #5063)
+
+;G1 F1000 Z10		;	Back off
+
+G90
+
+O<pz> endsub
+m2
