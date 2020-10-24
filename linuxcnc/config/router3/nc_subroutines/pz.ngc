@@ -1,21 +1,66 @@
-; Probe for toolsetter in z
-; call as 'O<probeZ> call 
+;	Set tool length of currently-selected tool
+;	in tool table.
 ;
+;	Load desired tool
+;	Move tip of tool to just above toolsetter
+;	Call O<pz> call
+;
+;	G59.3 needs to have origin at top of toolsetter when activated
+
+
 O<pz> sub
 
-G49
-G91
-G21
-G38.2 F200 Z-90		;	Find toolsetter
-G1 F1000 Z1			;	Back off a bit
+#<saveCoord> = #5220
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+G59.3
+G90					;	Set absolute motion
+
+G49					;	Cancel tool length compensation
+G21					;	Set metric
+
+G38.2 F200 Z20		;	Find toolsetter. It's below the minimum z, so this is as
+					;	low as we can go, but the holder is already much longer
+
+G91					;	Relative motion
+G1 F1000 Z2			;	Back off a bit
 G38.2 F50 Z-5		;	Slowly come down on toolsetter
 
-#<_ToolRefZ> = #5063
-(print,new length is #5063)
+;G28.1				;	Store current machine coordinates in #5161-5166
 
-;G1 F1000 Z10		;	Back off
+G10 L11 P#<_current_tool> Z0.	;	Store tool length based on G59.3
 
-G90
+#<posZ> = #5163
+#<len> = [#<posZ> - -349.1755]
+(print,posZ is #<posZ>)
+(print,len  is #<len>)
+
+G1 F1000 Z10
+
+#5220 = #<saveCoord>	;	Restore coordinate system previously in use
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+O100 if [#<saveCoord> EQ 1]
+	G54
+O100 elseif [#<saveCoord> EQ 2]
+	G55
+O100 elseif [#<saveCoord> EQ 3]
+	G56
+O100 elseif [#<saveCoord> EQ 4]
+	G57
+O100 elseif [#<saveCoord> EQ 5]
+	G58
+O100 elseif [#<saveCoord> EQ 6]
+	G59
+O100 elseif [#<saveCoord> EQ 7]
+	G59.1
+O100 elseif [#<saveCoord> EQ 8]
+	G59.2
+O100 elseif [#<saveCoord> EQ 9]
+	G59.3
+O100 endif
 
 O<pz> endsub
 m2

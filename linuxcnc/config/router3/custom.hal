@@ -54,6 +54,36 @@ net jogSpeed			halui.axis.jog-speed									<= jogCurve.out
 net jogPlus				halui.axis.selected.plus								<= absContJog.is-positive
 net jogMinus			halui.axis.selected.minus								<= absContJog.is-negative
 
+# The ShuttleXpress jog wheel has 10 clicks per revolution
+# 
+# Low-pass filter the jogwheel, and scale it so one click is 1000 counts
+# coming out of the ilowpass.
+#
+# Then connect it to the jog input on all the axes.
+
+loadrt ilowpass names=ilowpass.sxp
+addf ilowpass.sxp servo-thread
+
+setp ilowpass.sxp.gain 0.02
+setp ilowpass.sxp.scale 1000
+
+net sxp.counts       <= shuttle.0.counts
+net sxp.counts => ilowpass.sxp.in
+
+net sxp.counts-smoothed <= ilowpass.sxp.out
+net sxp.counts-smoothed => axis.x.jog-counts
+net sxp.counts-smoothed => axis.y.jog-counts
+net sxp.counts-smoothed => axis.z.jog-counts
+
+setp axis.x.jog-scale 0.00001
+setp axis.y.jog-scale 0.00001
+setp axis.z.jog-scale 0.00001
+setp axis.a.jog-scale 0.0001
+
+net axis-x-selected		axis.x.jog-enable										<=	halui.axis.x.is-selected
+net axis-y-selected		axis.y.jog-enable										<=	halui.axis.y.is-selected
+net axis-z-selected		axis.z.jog-enable										<=	halui.axis.z.is-selected
+net axis-a-selected		axis.a.jog-enable										<=	halui.axis.a.is-selected
 
 # loadrt comp names=compJog
 # addf compJog servo-thread
