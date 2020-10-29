@@ -1,0 +1,66 @@
+;	G59.3 needs to have origin at top of toolsetter when activated
+;
+;	Load tool in specified slot. Spindle must be empty!
+
+O<lt> sub
+
+#<saveCoord> = #5220
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+M66 P1 L0							;	Test to see if a tool is locked in the spindle
+O110 if [#5399 NE 0.0]				;	If there's a tool, return an error
+	(msg, Tool in spindle, can't load new tool)
+	O<lt> return [1]
+O110 endif
+
+G59.3
+G90									;	Set absolute motion
+G21									;	Set metric
+
+G53 G0 Z0.0								;	Raise tool all the way up
+G0 X[1098.488 - #1 * 90.0] Y2599.616	;	Move in front of slot (90.0 mm between slots) 
+G1 F4000 Z100.0							;	Lower down above tool
+M64 P2									;	Open collet
+G1 F3000 Z19.171						;	Lower onto tool
+
+M65 P2									;	Lock tool
+
+M66 P1 L3 Q2							;	Wait up to 2 seconds to lock tool
+O120 if [#5399 EQ -1.0]					;	If it failed to lock, abort
+	(msg, Tool failed to lock)
+	O<lt> return [1]
+O120 endif
+
+
+G1 F3000 Y2527.0						;	Move tool out of slot
+G1 F3000 Z100.0							;	Lift spindle
+G53 G0 Z0.00							;	Lift all the way up
+
+;	Restore things we changed above
+
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+O100 if [#<saveCoord> EQ 1]
+	G54
+O100 elseif [#<saveCoord> EQ 2]
+	G55
+O100 elseif [#<saveCoord> EQ 3]
+	G56
+O100 elseif [#<saveCoord> EQ 4]
+	G57
+O100 elseif [#<saveCoord> EQ 5]
+	G58
+O100 elseif [#<saveCoord> EQ 6]
+	G59
+O100 elseif [#<saveCoord> EQ 7]
+	G59.1
+O100 elseif [#<saveCoord> EQ 8]
+	G59.2
+O100 elseif [#<saveCoord> EQ 9]
+	G59.3
+O100 endif
+
+O<lt> endsub
+m2

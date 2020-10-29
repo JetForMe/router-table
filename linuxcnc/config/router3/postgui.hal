@@ -11,6 +11,9 @@ net program-idle									<= halui.program.is-idle
 net program-open-collet								<= motion.digital-out-02		# m64/m65 p2
 net program-purge-air								<= motion.digital-out-03		# m64/m65 p3
 
+net spindle-collet-open-in							=> motion.digital-in-00			# m66 p0
+net spindle-collet-locked-in						=> motion.digital-in-01			# m66 p1
+
 #	Invert the halui e-stop, and feed that to
 #	the servo enable pins…
 

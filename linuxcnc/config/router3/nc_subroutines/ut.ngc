@@ -9,19 +9,25 @@ O<ut> sub
 #<absolute> = #<_absolute>
 #<feed> = #<_feed>
 
+M66 P1 L0							;	Test to see if a tool is locked in the spindle
+O110 if [#5399 EQ 0.0]				;	If no tool, return an error
+	(msg, No tool in spindle to unload)
+	O<ut> return [1]					;
+O110 endif
+
 G59.3
 G90					;	Set absolute motion
 G21					;	Set metric
 
-G53 G0 Z0							;	Raise tool all the way up
-G0 X[1098.488 - #1 * 0.0]  Y2527.0	;	Move in front of slot 
+G53 G0 Z0.0							;	Raise tool all the way up
+G0 X[1098.488 - #1 * 90.0]  Y2527.0	;	Move in front of slot (90.0 mm between slots) 
 G1 F4000 Z19.171					;	Lower down in front of slot
 G1 F3000 Y2599.616					;	Move tool into slot
 M64 P2								;	Open collet
 G4 P0.75							;	Wait a bit
 G1 F3000 Z100.0						;	Lift spindle (holder should remain)
 M65 P2								;	Let collet close (stop air flow)
-G1 F4000 Z200.0						;	Keep lifting higher for clearance (dust shoe)
+G53 G0 Z0.00						;	Keep lifting higher for clearance (dust shoe)
 
 ;	Restore things we changed above
 
