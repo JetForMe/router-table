@@ -315,10 +315,17 @@ net spindle-zero-speed-in							=> lut5.1.in-0
 net program-idle									=> lut5.1.in-1
 #net pressure-ok-in									=> lut5.1.in-2
 net tool-change										=> lut5.1.in-2
-net program-open-collet								=> lut5.1.in-3
+setp lut5.1.in-3 0		# was program-open-collet, need to handle that with different conditions
 net spindle-button-in								=> lut5.1.in-4
 
-net spindle-open-collet-out							<= lut5.1.out
+net manual-collet-out								<= lut5.1.out
+
+loadrt or2 names=collet
+addf collet servo-thread
+
+net manual-collet-out								=> collet.in0
+net program-open-collet								=> collet.in1
+net spindle-open-collet-out							<= collet.out
 
 # Ladder
 

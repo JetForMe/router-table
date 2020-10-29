@@ -1,0 +1,51 @@
+;	G59.3 needs to have origin at top of toolsetter when activated
+;
+;	Unload tool into specified slot. SLOT MUST BE EMPTY!
+
+O<ut> sub
+
+#<saveCoord> = #5220
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+G59.3
+G90					;	Set absolute motion
+G21					;	Set metric
+
+G53 G0 Z0							;	Raise tool all the way up
+G0 X[1098.488 - #1 * 0.0]  Y2527.0	;	Move in front of slot 
+G1 F4000 Z19.171					;	Lower down in front of slot
+G1 F3000 Y2599.616					;	Move tool into slot
+M64 P2								;	Open collet
+G4 P0.75							;	Wait a bit
+G1 F3000 Z100.0						;	Lift spindle (holder should remain)
+M65 P2								;	Let collet close (stop air flow)
+G1 F4000 Z200.0						;	Keep lifting higher for clearance (dust shoe)
+
+;	Restore things we changed above
+
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+O100 if [#<saveCoord> EQ 1]
+	G54
+O100 elseif [#<saveCoord> EQ 2]
+	G55
+O100 elseif [#<saveCoord> EQ 3]
+	G56
+O100 elseif [#<saveCoord> EQ 4]
+	G57
+O100 elseif [#<saveCoord> EQ 5]
+	G58
+O100 elseif [#<saveCoord> EQ 6]
+	G59
+O100 elseif [#<saveCoord> EQ 7]
+	G59.1
+O100 elseif [#<saveCoord> EQ 8]
+	G59.2
+O100 elseif [#<saveCoord> EQ 9]
+	G59.3
+O100 endif
+
+O<ut> endsub
+m2
