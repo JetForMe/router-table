@@ -17,6 +17,7 @@
 ;			Turn off coolant
 ;			Stop spindle
 ;			Consider using M73 to save and restore state!
+;			Note: M73 is not useful here because it reverts G43 on return too
 
 O<lt> sub
 
@@ -36,7 +37,7 @@ G90																					;	Set absolute motion
 G21																					;	Set metric
 											
 G53 G0 Z0.0																			;	Raise tool all the way up
-G53 G0 X[#<_ini[atc]x> + #1 * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_pocket>	;	Move in front of slot (90.0 mm between slots) 
+G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_pocket>	;	Move in front of slot (90.0 mm between slots) 
 G53 G1 F4000 Z #<_ini[atc]z_clear>													;	Lower down above tool
 M64 P2																				;	Open collet
 G53 G1 F3000 Z #<_ini[atc]z_pocket>													;	Lower onto tool
@@ -78,5 +79,5 @@ O100 elseif [#<saveCoord> EQ 9]
 	G59.3
 O100 endif
 
-O<lt> endsub
+O<lt> endsub [0]
 m2

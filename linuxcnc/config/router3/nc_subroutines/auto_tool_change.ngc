@@ -1,0 +1,29 @@
+O<auto_tool_change> sub
+
+(print, tool in spindle #<tool_in_spindle>)
+(print, selected_tool #<selected_tool>)
+(print, current_pocket #<current_pocket>)
+(print, selected_pocket #<selected_pocket>)
+
+;	If there's a tool in the spindle, put it away first
+
+O110 if [#<tool_in_spindle> NE 0.0]													;	If there's a tool, return an error
+	(print, Tool #<tool_in_spindle> in spindle, unloading to #<current_pocket>)
+	O<ut> call [#<current_pocket>]
+	O130 if [#<_value> NE 0.0]
+		; TODO: let ut.ngc tell us we were empty and proceed?
+		(abort, Unable to unload tool #<tool_in_spindle> to pocket #<current_pocket>)
+		O<auto_tool_change> return [0]
+	O130 endif
+O110 endif
+
+;	Spindle should be empty, load new tool
+
+O<lt> call [#<selected_pocket>]
+O120 if [#<_value> NE 0.0]
+	(abort, Unable to load tool from pocket #<selected_pocket>)
+	O<auto_tool_change> return [0]
+O120 endif
+
+O<auto_tool_change> endsub [1]
+m2

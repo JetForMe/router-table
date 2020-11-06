@@ -1,4 +1,5 @@
-;	G59.3 needs to have origin at top of toolsetter when activated
+;	OLD: G59.3 needs to have origin at top of toolsetter when activated
+;	NEW: Tool rack is specified in machine coordinates
 ;
 ;	Unload tool from spindle into specified slot. SLOT MUST BE EMPTY!
 
@@ -24,7 +25,7 @@ G90																					;	Set absolute motion
 G21																					;	Set metric
 											
 G53 G0 Z0.0																			;	Raise tool all the way up
-G53 G0 X[#<_ini[atc]x> + #1 * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_clear>		;	Move in front of slot
+G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_clear>		;	Move in front of slot
 G53 G1 F4000 Z #<_ini[atc]z_pocket>													;	Lower down in front of slot
 G53 G1 F3000 Y #<_ini[atc]y_pocket>													;	Move tool into slot
 M64 P2																				;	Open collet
@@ -66,5 +67,5 @@ O100 elseif [#<saveCoord> EQ 9]
 	G59.3
 O100 endif
 
-O<ut> endsub
+O<ut> endsub [0]
 m2
