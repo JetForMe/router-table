@@ -12,7 +12,7 @@ O<ut> sub
 M66 P1 L0							;	Test to see if a tool is locked in the spindle
 O110 if [#5399 EQ 0.0]				;	If no tool, return an error
 	(msg, No tool in spindle to unload)
-	O<ut> return [1]					;
+	O<ut> return [1]
 O110 endif
 
 G59.3
@@ -25,6 +25,7 @@ G1 F4000 Z19.171					;	Lower down in front of slot
 G1 F3000 Y2599.616					;	Move tool into slot
 M64 P2								;	Open collet
 G4 P0.75							;	Wait a bit
+;	TODO: Check to make sure collet is open
 G1 F3000 Z100.0						;	Lift spindle (holder should remain)
 M65 P2								;	Let collet close (stop air flow)
 G53 G0 Z0.00						;	Keep lifting higher for clearance (dust shoe)
