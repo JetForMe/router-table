@@ -42,3 +42,4 @@ net servo-ok-z										=> brake-disengage-z
 
 
 
+net spindle-speed-scale								=> gladevcp.spindle-speed-text gladevcp.spindle-speed-bar

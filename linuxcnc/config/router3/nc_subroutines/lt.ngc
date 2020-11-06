@@ -1,6 +1,22 @@
-;	G59.3 needs to have origin at top of toolsetter when activated
+;	OLD: G59.3 needs to have origin at top of toolsetter when activated
+;	NEW: Tool rack is specified in machine coordinates
 ;
-;	Load tool in specified slot. Spindle must be empty!
+;	Load tool in specified slot into spindle. Spindle must be empty!
+;
+;	INI file Parameters (all values in machine coordinates)
+;
+;		[ATC]
+;		X				X coordinate of first fork
+;		Y_CLEAR			Y coordinate clear of fork
+;		Y_POCKET 		Y coordinate latched in fork
+;		Z_POCKET		Z coordinate of fork
+;		Z_CLEAR			Z coordinate where spindle is clear of tool holder in fork
+;		POCKET_SPACING	Distance between forks
+
+;	TODO:	Turn off feed override, restore when done
+;			Turn off coolant
+;			Stop spindle
+;			Consider using M73 to save and restore state!
 
 O<lt> sub
 
@@ -9,34 +25,34 @@ O<lt> sub
 #<absolute> = #<_absolute>
 #<feed> = #<_feed>
 
-M66 P1 L0							;	Test to see if a tool is locked in the spindle
-O110 if [#5399 NE 0.0]				;	If there's a tool, return an error
+M66 P1 L0																			;	Test to see if a tool is locked in the spindle
+O110 if [#5399 NE 0.0]																;	If there's a tool, return an error
 	(msg, Tool in spindle, can't load new tool)
 	O<lt> return [1]
 O110 endif
 
-G59.3
-G90									;	Set absolute motion
-G21									;	Set metric
-
-G53 G0 Z0.0								;	Raise tool all the way up
-G0 X[1098.488 - #1 * 90.0] Y2599.616	;	Move in front of slot (90.0 mm between slots) 
-G1 F4000 Z100.0							;	Lower down above tool
-M64 P2									;	Open collet
-G1 F3000 Z19.171						;	Lower onto tool
-
-M65 P2									;	Lock tool
-
-M66 P1 L3 Q2							;	Wait up to 2 seconds to lock tool
-O120 if [#5399 EQ -1.0]					;	If it failed to lock, abort
-	(msg, Tool failed to lock)
-	O<lt> return [1]
-O120 endif
-
-
-G1 F3000 Y2527.0						;	Move tool out of slot
-G1 F3000 Z100.0							;	Lift spindle
-G53 G0 Z0.00							;	Lift all the way up
+; G59.3
+G90																					;	Set absolute motion
+G21																					;	Set metric
+											
+G53 G0 Z0.0																			;	Raise tool all the way up
+G53 G0 X[#<_ini[atc]x> + #1 * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_pocket>	;	Move in front of slot (90.0 mm between slots) 
+G53 G1 F4000 Z #<_ini[atc]z_clear>													;	Lower down above tool
+M64 P2																				;	Open collet
+G53 G1 F3000 Z #<_ini[atc]z_pocket>													;	Lower onto tool
+										
+M65 P2																				;	Lock tool
+											
+M66 P1 L3 Q2																		;	Wait up to 2 seconds to lock tool
+O120 if [#5399 EQ -1.0]																;	If it failed to lock, abort
+	(msg, Tool failed to lock)										
+	O<lt> return [1]										
+O120 endif										
+										
+										
+G53 G1 F3000 Y #<_ini[atc]y_clear>													;	Move tool out of slot
+G53 G1 F3000 Z #<_ini[atc]z_clear>													;	Lift spindle
+G53 G0 Z0.00																		;	Lift all the way up
 
 ;	Restore things we changed above
 
