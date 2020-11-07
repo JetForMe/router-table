@@ -21,6 +21,13 @@
 
 O<lt> sub
 
+;	Verify the pocket is in range…
+
+O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
+	(abort, Tool load pocket #1 out of range)
+	O<lt> return [0]
+O160 endif
+
 #<saveCoord> = #5220
 #<metric> = #<_metric>
 #<absolute> = #<_absolute>
@@ -45,13 +52,14 @@ G53 G1 F3000 Z #<_ini[atc]z_pocket>													;	Lower onto tool
 M65 P2																				;	Lock tool
 											
 M66 P1 L3 Q2																		;	Wait up to 2 seconds to lock tool
-O120 if [#5399 EQ -1.0]																;	If it failed to lock, abort
-	(msg, Tool failed to lock)										
+O120 if [#5399 LT 1.0]																;	If it failed to lock, abort
+	(abort, Tool in pocket #1 failed to lock)										
 	O<lt> return [1]										
 O120 endif										
 										
 										
 G53 G1 F3000 Y #<_ini[atc]y_clear>													;	Move tool out of slot
+G4 P0.1																				;	Dwell for a moment to ensure the Y move completes
 G53 G1 F3000 Z #<_ini[atc]z_clear>													;	Lift spindle
 G53 G0 Z0.00																		;	Lift all the way up
 

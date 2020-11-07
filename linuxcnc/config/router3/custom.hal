@@ -192,12 +192,14 @@ net toolsetter-probe								=> motion.probe-input
 #
 #	Group 1: Debounce the spindle button and tool holder sensors
 
-loadrt debounce cfg=3
+loadrt debounce cfg=2,1
 addf debounce.0 servo-thread
+addf debounce.1 servo-thread
 
 # Debounce spindle-button-in-raw, spindle-collet-open-in-raw, spindle-collet-locked-in-raw
 
 setp debounce.0.delay 4
+setp debounce.1.delay 300			# We get a lot of spurious locked signals. Probably should and with collet-open, too
 
 net spindle-button-in-raw							=> debounce.0.0.in
 net spindle-button-in								<= debounce.0.0.out
@@ -205,8 +207,8 @@ net spindle-button-in								<= debounce.0.0.out
 net spindle-collet-open-in-raw						=> debounce.0.1.in
 net spindle-collet-open-in							<= debounce.0.1.out
 
-net spindle-collet-locked-in-raw					=> debounce.0.2.in
-net spindle-collet-locked-in						<= debounce.0.2.out
+net spindle-collet-locked-in-raw					=> debounce.1.0.in
+net spindle-collet-locked-in						<= debounce.1.0.out
 
 # Purge Air
 #

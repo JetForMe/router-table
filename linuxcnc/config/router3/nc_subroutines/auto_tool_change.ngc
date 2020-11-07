@@ -5,21 +5,36 @@ O<auto_tool_change> sub
 (print, current_pocket #<current_pocket>)
 (print, selected_pocket #<selected_pocket>)
 
+;	For some reason, we're not getting reliable
+;	pocket numbers from LinuxCNC. So for now,
+;	use the tool #.
+
+#<unloadToPocket> = #<tool_in_spindle>
+#<loadFromPocket> = #<selected_tool>
+
 ;	If there's a tool in the spindle, put it away first
 
-O110 if [#<tool_in_spindle> NE 0.0]													;	If there's a tool, return an error
-	(print, Tool #<tool_in_spindle> in spindle, unloading to #<current_pocket>)
-	O<ut> call [#<tool_in_spindle>]			;	[#<current_pocket>] seems to be unreliable
+O110 if [#<tool_in_spindle> GT 0.0]													;	If there's a tool, return an error
+	(print, Tool #<tool_in_spindle> in spindle, unloading to #<unloadToPocket>)
+	O<ut> call [#<unloadToPocket>]
 	O130 if [#<_value> NE 0.0]
 		; TODO: let ut.ngc tell us we were empty and proceed?
-		(abort, Unable to unload tool #<tool_in_spindle> to pocket #<current_pocket>)
+		(abort, Unable to unload tool #<tool_in_spindle> to pocket #<unloadToPocket>)
 		O<auto_tool_change> return [0]
 	O130 endif
 O110 endif
 
+;	If the desired tool is tool 0 (or -1), we're unloading the spindle,
+;	so set to "no tool" and bail…
+
+O140 if [#<selected_tool> LE 0.0]
+	M61 Q0
+	O<auto_tool_change> return [1]
+O140 endif
+
 ;	Spindle should be empty, load new tool
 
-O<lt> call [#<selected_tool>]			;	[#<selected_pocket>] seems to be unreliable
+O<lt> call [#<loadFromPocket>]
 O120 if [#<_value> NE 0.0]
 	(abort, Unable to load tool #<selected_tool> from pocket #<selected_pocket>)
 	O<auto_tool_change> return [0]

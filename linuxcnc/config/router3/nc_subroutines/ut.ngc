@@ -9,6 +9,14 @@
 
 O<ut> sub
 
+;	Verify the pocket is in range…
+
+O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
+	(abort, Tool unload pocket #1 out of range)
+	O<ut> return [0]
+O160 endif
+
+
 #<saveCoord> = #5220
 #<metric> = #<_metric>
 #<absolute> = #<_absolute>
@@ -27,6 +35,7 @@ G21																					;	Set metric
 G53 G0 Z0.0																			;	Raise tool all the way up
 G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_clear>		;	Move in front of slot
 G53 G1 F4000 Z #<_ini[atc]z_pocket>													;	Lower down in front of slot
+G4 P0.1																				;	Dwell for a moment to ensure the Z move completes
 G53 G1 F3000 Y #<_ini[atc]y_pocket>													;	Move tool into slot
 M64 P2																				;	Open collet
 
