@@ -26,10 +26,23 @@ O<lt> sub
 
 ;	Verify the pocket is in range…
 
-O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
+O160 if [#1 LE 0]		; OR #<_ini[atc]num_pockets> LT #1]
+	(print, Tool load pocket #1 out of range)
 	(abort, Tool load pocket #1 out of range)
 	O<lt> return [0]
 O160 endif
+
+;	If the pocket number is greater than the available pockets,
+;	it must be manually loaded…
+
+O170 if [#<_ini[atc]num_pockets> LT #1]
+	(print, Tool load pocket #1 must be manually loaded)
+	G53 G0 Z 0.0
+	G53 G0 X 100.0
+	G53 G0 Y -2600.0
+	O<lt> return [0]
+O170 endif
+
 
 #<saveCoord> = #5220
 #<metric> = #<_metric>
@@ -51,10 +64,10 @@ G21																					;	Set metric
 G53 G0 Z0.0																			;	Raise tool all the way up
 G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_pocket>	;	Move in front of slot (90.0 mm between slots) 
 G53 G1 F #<_ini[atc]speed_approach> Z #<_ini[atc]z_clear>							;	Lower down above tool
-M64 P2																				;	Open collet
+M62 P2																				;	Open collet
 G53 G1 F #<_ini[atc]speed_engage> Z #<_ini[atc]z_pocket>							;	Lower onto tool
 										
-M65 P2																				;	Lock tool
+M63 P2																				;	Lock tool
 											
 M66 P1 L3 Q2																		;	Wait up to 2 seconds to lock tool
 O120 if [[#<_task> GT 0] and #5399 LT 1.0]											;	If it failed to lock, abort
