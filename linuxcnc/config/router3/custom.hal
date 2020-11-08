@@ -74,6 +74,7 @@ net sxp.counts-smoothed <= ilowpass.sxp.out
 net sxp.counts-smoothed => axis.x.jog-counts
 net sxp.counts-smoothed => axis.y.jog-counts
 net sxp.counts-smoothed => axis.z.jog-counts
+net sxp.counts-smoothed => axis.a.jog-counts
 
 setp axis.x.jog-scale 0.00001
 setp axis.y.jog-scale 0.00001
