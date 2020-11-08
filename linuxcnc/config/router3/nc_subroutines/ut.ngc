@@ -9,6 +9,8 @@
 
 O<ut> sub
 
+(print,Unload tool #1)
+
 ;	Verify the pocket is in range…
 
 O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
@@ -23,8 +25,10 @@ O160 endif
 #<feed> = #<_feed>
 
 M66 P1 L0																			;	Test to see if a tool is locked in the spindle
-O110 if [#5399 EQ 0.0]																;	If no tool, return an error
+O110 if [[#<_task> GT 0] and #5399 EQ 0.0]											;	If no tool, return an error
+	(print, No tool in spindle to unload)
 	(msg, No tool in spindle to unload)
+	O<restore> call [#<metric>] [#<absolute>] [#<feed>]
 	O<ut> return [1]
 O110 endif
 
@@ -34,21 +38,25 @@ G21																					;	Set metric
 											
 G53 G0 Z0.0																			;	Raise tool all the way up
 G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_clear>		;	Move in front of slot
-G53 G1 F4000 Z #<_ini[atc]z_pocket>													;	Lower down in front of slot
+G53 G1 F #<_ini[atc]speed_approach>	 Z #<_ini[atc]z_pocket>							;	Lower down in front of slot
 G4 P0.1																				;	Dwell for a moment to ensure the Z move completes
-G53 G1 F3000 Y #<_ini[atc]y_pocket>													;	Move tool into slot
+G53 G1 F #<_ini[atc]speed_slot> Y #<_ini[atc]y_pocket>								;	Move tool into slot
+
 M64 P2																				;	Open collet
 
-G4 P0.75																			;	Wait a bit
+;G4 P0.75																			;	Wait a bit
 ;	TODO: Check to make sure collet is open:
-;M66 P1 L3 Q2																		;	Wait up to 2 seconds to lock tool
-;O120 if [#5399 EQ -1.0]																;	If it failed to lock, abort
-;	(msg, Tool failed to lock)										
-;	O<lt> return [1]										
-;O120 endif										
+
+M66 P1 L4 Q2																		;	Wait up to 2 seconds to unlock tool
+O120 if [[#<_task> GT 0] and #5399 GT 0.0]											;	If it failed to unlock, abort
+	(print, Tool failed to unlock)										
+	(abort, Tool failed to unlock)										
+	O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+	O<ut> return [1]										
+O120 endif										
 
 
-G53 G1 F3000 Z #<_ini[atc]z_clear>													;	Lift spindle (holder should remain)
+G53 G1 F #<_ini[atc]speed_engage> Z #<_ini[atc]z_clear>								;	Lift spindle (holder should remain)
 M65 P2																				;	Let collet close (stop air flow)
 G53 G0 Z0.0																			;	Keep lifting higher for clearance (dust shoe)
 
