@@ -42,7 +42,7 @@ G53 G1 F #<_ini[atc]speed_approach>	 Z #<_ini[atc]z_pocket>							;	Lower down i
 G4 P0.1																				;	Dwell for a moment to ensure the Z move completes
 G53 G1 F #<_ini[atc]speed_slot> Y #<_ini[atc]y_pocket>								;	Move tool into slot
 
-M62 P2																				;	Open collet
+M64 P2																				;	Open collet
 
 ;G4 P0.75																			;	Wait a bit
 ;	TODO: Check to make sure collet is open:
@@ -57,7 +57,7 @@ O120 endif
 
 
 G53 G1 F #<_ini[atc]speed_engage> Z #<_ini[atc]z_clear>								;	Lift spindle (holder should remain)
-M63 P2																				;	Let collet close (stop air flow)
+M65 P2																				;	Let collet close (stop air flow)
 G53 G0 Z0.0																			;	Keep lifting higher for clearance (dust shoe)
 
 ;	Restore things we changed above
