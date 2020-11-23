@@ -5,7 +5,13 @@
 ;	Move tip of tool to just above toolsetter
 ;	Call O<pz> call
 ;
-;	G59.3 needs to have origin at top of toolsetter when activated
+;	G59.3 needs to have origin at top of toolsetter when activated. This
+;	is accomplished by loading the values from the INI TOOLSETTER section:
+;
+;	[TOOLSETTER]
+;	X = 1210.465
+;	Y = -187.821
+;	Z = -270.153
 
 
 O<pz> sub
@@ -14,6 +20,14 @@ O<pz> sub
 #<metric> = #<_metric>
 #<absolute> = #<_absolute>
 #<feed> = #<_feed>
+
+#<zRef> = #<_ini[toolsetter]z>		;	-349.1755
+(print,zRef is #<zRef>)
+
+; Set G59.3 to the offsets stored in the INI file. This should
+; be the top center of the toolsetter in machine coordinates…
+
+G10 L2 P9 X#<_ini[toolsetter]x> Y#<_ini[toolsetter]y> Z#<_ini[toolsetter]z>
 
 G59.3
 G90					;	Set absolute motion
@@ -33,7 +47,7 @@ G38.2 F50 Z-5		;	Slowly come down on toolsetter
 G10 L11 P#<_current_tool> Z0.	;	Store tool length based on G59.3
 
 #<posZ> = #5163
-#<len> = [#<posZ> - -349.1755]
+#<len> = [#<posZ> - #<zRef>]
 (print,posZ is #<posZ>)
 (print,len  is #<len>)
 

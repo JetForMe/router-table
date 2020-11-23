@@ -5,7 +5,7 @@ O<tshome> sub
 
 G21			;	Restore proper value
 G53 G0 Z-1
-G53 G0 X63.3508 Y-2647.0700
+G53 G0 X#<_ini[toolsetter]x> Y#<_ini[toolsetter]y>
 
 O<tshome> endsub
 m2
