@@ -43,6 +43,17 @@ O170 if [#<_ini[atc]num_pockets> LT #1]
 	O<lt> return [0]
 O170 endif
 
+;	Stop the Spindle and wait for it to stop
+
+M5
+M66 P2 L3 Q20																		;	Wait up to 20 seconds for zero-speed input to go high
+																					;	TODO: Should this only be during a milltask?
+O200 if [#5399 LT 0.0]																;	If it timed out, return an error
+	(print, Spindle didn't stop)
+	O<lt> return [1]
+O200 endif
+
+;	Save stuff to restore
 
 #<saveCoord> = #5220
 #<metric> = #<_metric>

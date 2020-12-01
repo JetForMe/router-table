@@ -21,7 +21,7 @@ O<pz> sub
 #<absolute> = #<_absolute>
 #<feed> = #<_feed>
 
-#<zRef> = #<_ini[toolsetter]z>		;	-349.1755
+#<zRef> = #<_ini[toolsetter]z>		;	was -349.1755
 (print,zRef is #<zRef>)
 
 ; Set G59.3 to the offsets stored in the INI file. This should

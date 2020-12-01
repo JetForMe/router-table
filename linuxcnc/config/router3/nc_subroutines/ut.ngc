@@ -15,16 +15,27 @@ O<ut> sub
 
 O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
 	(abort, Tool unload pocket #1 out of range)
-	O<ut> return [0]
+	O<ut> return [1]
 O160 endif
 
+
+;	Stop the Spindle and wait for it to stop
+
+(print,Unload tool: stop spindle)
+
+M5
+
+;	Save stuff to restore
 
 #<saveCoord> = #5220
 #<metric> = #<_metric>
 #<absolute> = #<_absolute>
 #<feed> = #<_feed>
 
+(print,Unload tool: Test for tool presence)
+
 M66 P1 L0																			;	Test to see if a tool is locked in the spindle
+																					;	TODO: Move this earlier
 O110 if [[#<_task> GT 0] and #5399 EQ 0.0]											;	If no tool, return an error
 	(print, No tool in spindle to unload)
 	(msg, No tool in spindle to unload)
@@ -35,12 +46,27 @@ O110 endif
 ; G59.3
 G90																					;	Set absolute motion
 G21																					;	Set metric
-											
+
+(print,Unload tool: Position over slot)
+
 G53 G0 Z0.0																			;	Raise tool all the way up
 G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_clear>		;	Move in front of slot
+
+;	Wait for spindle to stop…
+
+M66 P2 L3 Q20																		;	Wait up to 20 seconds for zero-speed input to go high
+																					;	TODO: Should this only be during a milltask?
+O200 if [#5399 LT 0.0]																;	If it timed out, return an error
+	(print, Spindle didn't stop)
+	O<lt> return [1]
+O200 endif
+
+(print,Unload tool: Lowering F#<_ini[atc]speed_approach>)
+
 G53 G1 F #<_ini[atc]speed_approach>	 Z #<_ini[atc]z_pocket>							;	Lower down in front of slot
 G4 P0.1																				;	Dwell for a moment to ensure the Z move completes
 G53 G1 F #<_ini[atc]speed_slot> Y #<_ini[atc]y_pocket>								;	Move tool into slot
+
 
 M64 P2																				;	Open collet
 
