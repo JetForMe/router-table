@@ -104,43 +104,8 @@ addf notZFault servo-thread
 #halui.0.jog
 
 # System Pneumatic Pressure
-#
-# We don't have a pressure-ok sensor yet, so
-# just assume it’s good…
-#
-# Wow, this clusterfuck is because there doesn't seem to be
-# a way to set a net to a constant value.
 
-loadrt constant count=2
-addf constant.0 servo-thread
-addf constant.1 servo-thread
-
-loadrt lut5 count=3 #names=spindleInhibit
-addf lut5.0 servo-thread
-addf lut5.1 servo-thread
-addf lut5.2 servo-thread
-
-
-loadrt timedelay names=spindleFanDelay
-addf spindleFanDelay servo-thread
-
-setp constant.0.value 0
-setp constant.1.value 1
-
-loadrt near count=2
-addf near.0 servo-thread
-addf near.1 servo-thread
-
-net zero <= constant.0.out
-net one <= constant.1.out
-
-net zero => near.0.in1
-net one => near.0.in2
-
-net one => near.1.in1
-net one => near.1.in2
-
-net pressure-ok-in <= near.1.out
+net pressure-ok-in					<= hm2_7i76e.0.7i76.0.0.input-24
 
 #
 #	Spindle Pins
@@ -215,6 +180,11 @@ net spindle-collet-locked-in						<= debounce.1.0.out
 #
 # spindle-purge-air-out = program-purge-air || !spindle-zero-speed-in
 
+loadrt lut5 count=3 #names=spindleInhibit
+addf lut5.0 servo-thread
+addf lut5.1 servo-thread
+addf lut5.2 servo-thread
+
 setp lut5.2.function 0xB
 
 net program-purge-air => lut5.2.in-0
@@ -263,6 +233,9 @@ net spindle-at-speed-in => spindle.0.at-speed
 net spindle-enable spindle.0.on						=> spindle-enable-out
 
 #	Spindle fan (on with spindle, off after delay)
+
+loadrt timedelay names=spindleFanDelay
+addf spindleFanDelay servo-thread
 
 setp spindleFanDelay.off-delay						180.0						#	Run for at least a minute
 net spindle-enable									=> spindleFanDelay.in
