@@ -12,6 +12,7 @@ G90 (absolute)
 
 ; move to toolchange position: z, then xy
 g53 g0 Z #<_ini[manual_tool_change_position]z>
+g53 g0 x10
 ;g53 g0 X #<_ini[manual_tool_change_position]x> Y #<_ini[manual_tool_change_position]y>
 
 

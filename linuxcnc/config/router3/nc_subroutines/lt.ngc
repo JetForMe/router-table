@@ -1,0 +1,121 @@
+;	OLD: G59.3 needs to have origin at top of toolsetter when activated
+;	NEW: Tool rack is specified in machine coordinates
+;
+;	Load tool in specified slot into spindle. Spindle must be empty!
+;
+;	INI file Parameters (all values in machine coordinates)
+;
+;		[ATC]
+;		X				X coordinate of first fork
+;		Y_CLEAR			Y coordinate clear of fork
+;		Y_POCKET 		Y coordinate latched in fork
+;		Z_POCKET		Z coordinate of fork
+;		Z_CLEAR			Z coordinate where spindle is clear of tool holder in fork
+;		POCKET_SPACING	Distance between forks
+
+;	TODO:	Turn off feed override, restore when done
+;			Turn off coolant
+;			Stop spindle
+;			Consider using M73 to save and restore state!
+;			Note: M73 is not useful here because it reverts G43 on return too
+
+O<lt> sub
+
+(print,Load tool #1)
+
+
+;	Verify the pocket is in range…
+
+O160 if [#1 LE 0]		; OR #<_ini[atc]num_pockets> LT #1]
+	(print, Tool load pocket #1 out of range)
+	(abort, Tool load pocket #1 out of range)
+	O<lt> return [0]
+O160 endif
+
+;	If the pocket number is greater than the available pockets,
+;	it must be manually loaded…
+
+O170 if [#<_ini[atc]num_pockets> LT #1]
+	(print, Tool load pocket #1 must be manually loaded)
+	G53 G0 Z 0.0
+	G53 G0 X 100.0
+	G53 G0 Y -2600.0
+	O<lt> return [0]
+O170 endif
+
+;	Stop the Spindle and wait for it to stop
+
+M5
+M66 P2 L3 Q20																		;	Wait up to 20 seconds for zero-speed input to go high
+																					;	TODO: Should this only be during a milltask?
+O200 if [#5399 LT 0.0]																;	If it timed out, return an error
+	(print, Spindle didn't stop)
+	O<lt> return [1]
+O200 endif
+
+;	Save stuff to restore
+
+#<saveCoord> = #5220
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+M66 P1 L0																			;	Test to see if a tool is locked in the spindle
+O110 if [[#<_task> GT 0] and #5399 NE 0.0]											;	If there's a tool, return an error
+	(print, Tool in spindle, can't load new tool)
+	(msg, Tool in spindle, can't load new tool)
+	O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+	O<lt> return [1]
+O110 endif
+
+; G59.3
+G90																					;	Set absolute motion
+G21																					;	Set metric
+											
+G53 G0 Z0.0																			;	Raise tool all the way up
+G53 G0 X[#<_ini[atc]x> + [#1-1] * #<_ini[atc]pocket_spacing>] Y #<_ini[atc]y_pocket>	;	Move in front of slot (90.0 mm between slots) 
+G53 G1 F #<_ini[atc]speed_approach> Z #<_ini[atc]z_clear>							;	Lower down above tool
+M64 P2																				;	Open collet
+G53 G1 F #<_ini[atc]speed_engage> Z #<_ini[atc]z_pocket>							;	Lower onto tool
+										
+M65 P2																				;	Lock tool
+M66 P1 L3 Q2																		;	Wait up to 2 seconds to lock tool
+O120 if [[#<_task> GT 0] and #5399 LT 1.0]											;	If it failed to lock, abort
+	(print, Tool in pocket #1 failed to lock)										
+	(abort, Tool in pocket #1 failed to lock)										
+	O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+	O<lt> return [1]										
+O120 endif										
+										
+										
+G53 G1 F #<_ini[atc]speed_slot> Y #<_ini[atc]y_clear>								;	Move tool out of slot
+G4 P0.1																				;	Dwell for a moment to ensure the Y move completes
+G53 G1 F #<_ini[atc]speed_approach> Z #<_ini[atc]z_clear>							;	Lift spindle
+G53 G0 Z0.00																		;	Lift all the way up
+
+;	Restore things we changed above
+
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+O100 if [#<saveCoord> EQ 1]
+	G54
+O100 elseif [#<saveCoord> EQ 2]
+	G55
+O100 elseif [#<saveCoord> EQ 3]
+	G56
+O100 elseif [#<saveCoord> EQ 4]
+	G57
+O100 elseif [#<saveCoord> EQ 5]
+	G58
+O100 elseif [#<saveCoord> EQ 6]
+	G59
+O100 elseif [#<saveCoord> EQ 7]
+	G59.1
+O100 elseif [#<saveCoord> EQ 8]
+	G59.2
+O100 elseif [#<saveCoord> EQ 9]
+	G59.3
+O100 endif
+
+O<lt> endsub [0]
+m2

@@ -9,7 +9,7 @@ loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 
 # standard components
-loadrt pid num_chan=4 
+loadrt pid num_chan=5
 
 # hostmot2 driver
 loadrt hostmot2
@@ -27,6 +27,7 @@ addf pid.0.do-pid-calcs servo-thread
 addf pid.1.do-pid-calcs servo-thread
 addf pid.2.do-pid-calcs servo-thread
 addf pid.3.do-pid-calcs servo-thread
+addf pid.4.do-pid-calcs servo-thread
 addf hm2_[HOSTMOT2](BOARD).0.write servo-thread
 
 # Joint 0
@@ -165,6 +166,42 @@ setp pid.3.deadband [JOINT_3]DEADBAND
 setp pid.3.maxoutput [JOINT_3]MAX_OUTPUT
 setp pid.3.maxerror [JOINT_3]MAX_ERROR
 
+# Joint 4
+# axis enable chain
+newsig emcmot.4.enable bit
+sets emcmot.4.enable FALSE
+net emcmot.4.enable <= joint.4.amp-enable-out
+net emcmot.4.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.04.enable pid.4.enable
+
+# position command and feedback
+net emcmot.4.pos-cmd joint.4.motor-pos-cmd => pid.4.command
+net motor.4.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.04.position-fb joint.4.motor-pos-fb pid.4.feedback
+net motor.4.command pid.4.output hm2_[HOSTMOT2](BOARD).0.stepgen.04.velocity-cmd
+setp pid.4.error-previous-target true
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.dirsetup [JOINT_4]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.dirhold [JOINT_4]DIRHOLD
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.steplen [JOINT_4]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.stepspace [JOINT_4]STEPSPACE
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.position-scale [JOINT_4]SCALE
+# setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.maxvel [JOINT_4]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.maxaccel [JOINT_4]STEPGEN_MAX_ACC
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.step_type 0
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.04.control-type 1
+
+setp pid.4.Pgain [JOINT_4]P
+setp pid.4.Igain [JOINT_4]I
+setp pid.4.Dgain [JOINT_4]D
+setp pid.4.bias [JOINT_4]BIAS
+setp pid.4.FF0 [JOINT_4]FF0
+setp pid.4.FF1 [JOINT_4]FF1
+setp pid.4.FF2 [JOINT_4]FF2
+setp pid.4.deadband [JOINT_4]DEADBAND
+setp pid.4.maxoutput [JOINT_4]MAX_OUTPUT
+setp pid.4.maxerror [JOINT_4]MAX_ERROR
+
+net max-limit-home-joint-4		joint.4.home-sw-in					<= hm2_7i76e.0.7i76.0.0.input-15-not
+
 # Spindle
 #setp hm2_7i76e.0.pwmgen.00.output-type 0
 #setp hm2_7i76e.0.pwmgen.00.scale [SPINDLE]MAX_RPM
@@ -182,10 +219,13 @@ net estop-loop iocontrol.0.user-enable-out => iocontrol.0.emc-enable-in
 #	Set up as manual tool change until we've got the rack working
 #
 
-loadusr -W hal_manualtoolchange
+# loadusr -W hal_manualtoolchange
+# 
+# net tool-change iocontrol.0.tool-change				=>	hal_manualtoolchange.change
+# net tool-changed iocontrol.0.tool-changed			<=	hal_manualtoolchange.changed
+# net tool-number iocontrol.0.tool-prep-number		=>	hal_manualtoolchange.number
+# net tool-prepare-loopback iocontrol.0.tool-prepare	=>	iocontrol.0.tool-prepared
+# 
 
-net tool-change iocontrol.0.tool-change				=>	hal_manualtoolchange.change
-net tool-changed iocontrol.0.tool-changed			<=	hal_manualtoolchange.changed
-net tool-number iocontrol.0.tool-prep-number		=>	hal_manualtoolchange.number
-net tool-prepare-loopback iocontrol.0.tool-prepare	=>	iocontrol.0.tool-prepared
-
+net tool-change-loop		iocontrol.0.tool-change		=> iocontrol.0.tool-changed
+net tool-prepare-loopback	iocontrol.0.tool-prepare	=> iocontrol.0.tool-prepared
