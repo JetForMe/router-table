@@ -105,21 +105,21 @@ addf notZFault servo-thread
 
 # System Pneumatic Pressure
 
-net pressure-ok-in					<= hm2_7i76e.0.7i76.0.0.input-24
+net pressure-ok-in									<= hm2_7i76e.0.7i76.0.0.input-24
 
 #
 #	Spindle Pins
 #
 
-net spindle-button-in-raw			<= hm2_7i76e.0.7i76.0.0.input-07
-net spindle-temp-ok-in				<= hm2_7i76e.0.7i76.0.0.input-04
-net spindle-collet-open-in-raw		<= hm2_7i76e.0.7i76.0.0.input-05
-net spindle-collet-locked-in-raw	<= hm2_7i76e.0.7i76.0.0.input-06
-net spindle-zero-speed-in			<= hm2_7i76e.0.7i76.0.0.input-23
-net spindle-at-speed-in				<= hm2_7i76e.0.7i76.0.0.input-22
-
-net spindle-open-collet-out			=> hm2_7i76e.0.7i76.0.0.output-06
-net spindle-purge-air-out			=> hm2_7i76e.0.7i76.0.0.output-07
+net spindle-button-in-raw							<= hm2_7i76e.0.7i76.0.0.input-07
+net spindle-temp-ok-in								<= hm2_7i76e.0.7i76.0.0.input-04
+net spindle-collet-open-in-raw						<= hm2_7i76e.0.7i76.0.0.input-05
+net spindle-collet-locked-in-raw					<= hm2_7i76e.0.7i76.0.0.input-06
+net spindle-zero-speed-in							<= hm2_7i76e.0.7i76.0.0.input-23
+net spindle-at-speed-in								<= hm2_7i76e.0.7i76.0.0.input-22
+				
+net spindle-open-collet-out							=> hm2_7i76e.0.7i76.0.0.output-06
+net spindle-purge-air-out							=> hm2_7i76e.0.7i76.0.0.output-07
 
 alias pin	hm2_7i76e.0.7i76.0.0.spinena			spindle-enable-out
 alias pin	hm2_7i76e.0.7i76.0.0.output-05			spindle-fan-on-out
@@ -226,7 +226,7 @@ net axis-fault-z	servo-fault-in-z				=> joint.3.amp-fault-in
 # VFD has ramped up its output frequency to the commanded speed. It does
 # NOT mean the spindle is actually at that speed.
 
-net spindle-at-speed-in => spindle.0.at-speed
+net spindle-at-speed-in								=> spindle.0.at-speed
 
 # Spindle enable/inhibit
 
@@ -259,11 +259,11 @@ net spindle-fan-delay	spindleFanDelay.out			=> spindle-fan-on-out
 #	This doesn't work. I really need m3/m4 to be *prevented* if certain conditions aren't met.
 
 setp lut5.0.function 0x7f
-net spindle-temp-ok-in => lut5.0.in-0
-net spindle-collet-locked-in => lut5.0.in-1
-net pressure-ok-in => lut5.0.in-2
+net spindle-temp-ok-in								=> lut5.0.in-0
+net spindle-collet-locked-in						=> lut5.0.in-1
+net pressure-ok-in									=> lut5.0.in-2
 
-net spindle-off spindle.0.inhibit <= lut5.0.out
+net spindle-off spindle.0.inhibit					<= lut5.0.out
 
 # Tool-release rules
 #

@@ -14,6 +14,7 @@ net program-purge-air								<= motion.digital-out-03		# m64/m65 p3
 net spindle-collet-open-in							=> motion.digital-in-00			# m66 p0
 net spindle-collet-locked-in						=> motion.digital-in-01			# m66 p1
 net spindle-zero-speed-in							=> motion.digital-in-02			# m66 p2
+net pressure-ok-in									=> motion.digital-in-03			# m66 p3
 
 #	Invert the halui e-stop, and feed that to
 #	the servo enable pins…

@@ -6,10 +6,20 @@ O<auto_tool_change> sub
 (print, current_pocket #<current_pocket>)
 (print, selected_pocket #<selected_pocket>)
 
+;	Bail if we think the selected tool is already loaded…
+
 O150 if [#<tool_in_spindle> EQ #<selected_tool>]
 	(print, Selected tool already in spindle, continuing)
 	O<auto_tool_change> return [1]
 O150 endif
+
+;	Check for good air pressure before doing anything…
+
+M66 L3 Q3 P3
+O100 if [#5399 LT 0.0]
+	(abort, Tool change aborted, insufficient air pressure)
+	O<auto_tool_change> return [0]
+O100 endif
 
 ;	For some reason, we're not getting reliable
 ;	pocket numbers from LinuxCNC. So for now,
