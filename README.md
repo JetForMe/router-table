@@ -9,15 +9,13 @@ There are two Phoenix Contact DIN rail relays, DigiKey part [277-17665-ND](https
 
 ### Toolchanger
 
-3D-printed risers do a decent job of holding the forks high enough to allow the dust collector shoe bristles to surround the tool during load and unlooad:
+3D-printed risers do a decent job of holding the forks high enough to allow the dust collector shoe bristles to surround the tool during load and unlooad, when the forks are turnd around to face backward:
 
 <a href="https://i.imgur.com/3V2IuPz.jpg"><img src="https://i.imgur.com/3V2IuPzl.jpg"></a>
 
 #### Issues
 
 * The dust shoe gets in the way. One possibility: https://www.youtube.com/watch?v=XIUp3J-6hyI
-* The adapter plate strikes the top of the tool to the left. Adjusting the positioning of the spindle up (i.e. with the new adapter plate I'm thinking of cutting) will prevent it from reaching the forks at this level. For now, just notch out the left corner.
-* Raising the forks a bit might give more room for bristles, and will allow for the spindle to be mounted a bit higher.
 
 ### Toolsetter
 
