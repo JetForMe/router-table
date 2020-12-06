@@ -13,10 +13,6 @@ There are two Phoenix Contact DIN rail relays, DigiKey part [277-17665-ND](https
 
 <a href="https://i.imgur.com/3V2IuPz.jpg"><img src="https://i.imgur.com/3V2IuPzl.jpg"></a>
 
-#### Issues
-
-* The dust shoe gets in the way. One possibility: https://www.youtube.com/watch?v=XIUp3J-6hyI
-
 ### Toolsetter
 
 `hm2_7i76e.0.7i76.0.0.input-14`
