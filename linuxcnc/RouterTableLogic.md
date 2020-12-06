@@ -18,15 +18,15 @@ servo-enable
 
 All inputs have optional signal conditioning. The HAL signals representing the raw input are always prefixed with `raw-`:
 
-| Signal                      	| HAL Signal Name          	| Source Device 	| Source Pin 	| Mesa Pin Name                   	|
-|-----------------------------	|--------------------------	|---------------	|------------	|---------------------------------	|
-| VFD at commanded speed      	| `raw-spindle-at-speed`   	| VFD           	| MO1        	| `hm2_7i76e.0.7i76.0.0.input-22` 	|
-| VFD at commanded zero speed 	| `raw-spindle-zero-speed` 	| VFD           	| M02        	| `hm2_7i76e.0.7i76.0.0.input-23` 	|
-|                             	|                          	|               	|            	|                                 	|
-|                             	|                          	|               	|            	|                                 	|
-|                             	|                          	|               	|            	|                                 	|
-|                             	|                          	|               	|            	|                                 	|
-|                             	|                          	|               	|            	|                                 	|                              	|
+| Signal                        | HAL Signal Name            | Source Device     | Source Pin    | Mesa Pin Name                     |
+|-------------------------------|----------------------------|-------------------|---------------|-----------------------------------|
+| VFD at commanded speed        | `raw-spindle-at-speed`     | VFD               | MO1           | `hm2_7i76e.0.7i76.0.0.input-22`   |
+| VFD at commanded zero speed   | `raw-spindle-zero-speed`   | VFD               | M02           | `hm2_7i76e.0.7i76.0.0.input-23`   |
+|                               |                            |                 |              |                                   |
+|                               |                            |                 |              |                                   |
+|                               |                            |                 |              |                                   |
+|                               |                            |                 |              |                                   |
+|                               |                            |                 |              |                                   |                              	|
 
 tool-button							Manual tool release button
 spindle-temp-ok						Spindle temperature is okay
@@ -64,9 +64,9 @@ Connections
 8					MI2		(spindle dir)
 
 
-7i76e TB6			Connected To
----------			------------
-
+7i76e TB6	I/O		Connected To
+---------	-----	------------
+14			Input	Toolsetter
 
 
 
