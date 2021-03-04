@@ -1,5 +1,6 @@
 router3.var
 *.bak
+*.pyc
 tool.tbl
 tool.tbl.bak
 autosave.halscope
