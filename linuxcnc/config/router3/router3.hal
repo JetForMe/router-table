@@ -167,6 +167,7 @@ setp pid.3.maxoutput [JOINT_3]MAX_OUTPUT
 setp pid.3.maxerror [JOINT_3]MAX_ERROR
 
 # Joint 4
+setp joint.4.homing-disabled 1
 # axis enable chain
 newsig emcmot.4.enable bit
 sets emcmot.4.enable FALSE
