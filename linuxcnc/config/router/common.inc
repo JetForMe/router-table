@@ -82,6 +82,8 @@ HALUI = halui
 HALFILE = router.hal
 HALFILE = io.hal
 HALFILE = custom.hal
+
+[HAL]
 POSTGUI_HALFILE = postgui.hal
 
 [HALUI]
