@@ -1,3 +1,6 @@
+[HAL]
+POSTGUI_HALFILE = postgui.hal
+
 [INPUTS]
 # DO NOT change the input text
 INPUT_0 = Select
