@@ -1,2 +1,4 @@
 *.cps linguist-language=JavaScript
 *.clp linguist-language=Text
+*.nc linguist-language=G-Code
+*.ngc linguist-language=G-Code
