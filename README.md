@@ -26,6 +26,18 @@ Brown is +24V, black is signal (to 7i76e input), blue is ground. Most of the inp
 <a href="https://i.imgur.com/Dny7TSk.jpg"><img src="https://i.imgur.com/Dny7TSkl.jpg"></a>
 <a href="https://i.imgur.com/UmxeUWG.jpg"><img src="https://i.imgur.com/ROSZThol.jpg"></a>
 
+## Networking
+
+This CNC router uses a Mesa 7i76e card, connected on a second Ethernet interface. On my machine, this requires the second interface to be configured with a static IP address. The following lines are added to `/etc/network/interfaces/`:
+
+```
+# Second interface directly connected to Mesa card
+
+auto enp5s0
+iface enp5s0 inet static
+    address 10.10.10.1
+    netmask 255.255.255.0
+```
 
 # Miscellanea
 
