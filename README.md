@@ -39,6 +39,15 @@ iface enp5s0 inet static
     netmask 255.255.255.0
 ```
 
+Then
+
+```bash
+$ sudo ifup enp5s0
+```
+
+(Might need to take it down first, then bring it back up.)
+
+
 # Miscellanea
 
 [Etekcity Outdoor Smart Plug](https://www.etekcity.com/product/100344) uses an [ESP-01e](https://docs.ai-thinker.com/_media/esp8266/docs/esp-01e_product_specification_en.pdf) Wi-Fi controller and a [HLW8012](https://tinkerman.cat/post/hlw8012-ic-new-sonoff-pow) ([ESPHome](https://esphome.io/components/sensor/hlw8012.html)) with shunt resistor to measure power.
