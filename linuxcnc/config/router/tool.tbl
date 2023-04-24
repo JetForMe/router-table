@@ -1,0 +1,10 @@
+T1 P1 Z114.106 D12.7 ;1/2" compression 
+T2 P2 Z122.471 D3.175 ;1/4" ball spektra 
+T4 P4 Z137.426 D9.525 ;added 20191008 
+T5 P5 Z136.751 D9.525 ;3/8" 2fl upcut 
+T6 P6 Z105.17 D6.35 ;1/4" single flute upcut 
+T7 P7 Z136.693 D5.08 ;5.08 mm drill 
+T3 P3 Z90.0877 D51.05 ;surfacing 
+T98 P98 Z207.559 ;haimer 
+T8 P8 Z161.522 D1.5 ;1/16" tapered spektra 
+T9 P9 Z95.2677 D51.5 ;surfacing 

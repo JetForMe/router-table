@@ -35,7 +35,7 @@ G90					;	Set absolute motion
 G49					;	Cancel tool length compensation
 G21					;	Set metric
 
-G38.2 F200 Z20		;	Find toolsetter. It's below the minimum z, so this is as
+G38.3 F200 Z20		;	Find toolsetter. It's below the minimum z, so this is as
 					;	low as we can go, but the holder is already much longer
 
 G91					;	Relative motion

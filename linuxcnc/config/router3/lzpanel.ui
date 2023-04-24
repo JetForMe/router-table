@@ -14,6 +14,9 @@
         <child>
           <placeholder/>
         </child>
+        
+        <!-- Spindle Speed -->
+        
         <child>
           <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
@@ -50,6 +53,9 @@
             <property name="position">1</property>
           </packing>
         </child>
+
+        <!-- Spindle Speed Bar -->
+        
         <child>
           <object class="HAL_HBar" id="spindle-speed-bar">
             <property name="height_request">30</property>
@@ -68,9 +74,13 @@
             <property name="position">2</property>
           </packing>
         </child>
+        
         <child>
           <placeholder/>
         </child>
+        
+        <!-- System Air Pressure -->
+        
         <child>
           <object class="HAL_HideTable" id="hal_hidetable1">
             <property name="visible">True</property>
@@ -104,6 +114,89 @@
             <property name="position">4</property>
           </packing>
         </child>
+
+        <!-- Toolsetter Active -->
+        
+        <child>
+          <object class="HAL_HideTable" id="hal_hidetable2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="n_rows">2</property>
+            <child>
+              <object class="HAL_LED" id="toolsetter-active">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="led_bicolor">True</property>
+                <property name="led_blink_rate">0</property>
+                <property name="pick_color_off">#ffff26660000</property>
+                <property name="pick_color_on">#0000ffff0000</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Toolsetter Active</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+
+        <!-- Tool Management -->
+        
+		<child>
+			<object class="GtkHBox" id="toolbar">
+				<property name="name">ButtonBar</property>
+				<property name="visible">True</property>
+				<property name="can-focus">False</property>
+				<property name="spacing">10</property>
+				<child>
+					<object class="HAL_Button" id="moveToToolsetter">
+						<property name="label" translatable="yes">Move to Toolsetter</property>
+						<property name="visible">True</property>
+						<property name="can-focus">True</property>
+						<property name="receives-default">True</property>
+						<signal name="clicked" handler="moveToToolsetter" swapped="no"/>
+					</object>
+					<packing>
+						<property name="expand">False</property>
+						<property name="fill">False</property>
+						<property name="pack-type">end</property>
+						<property name="position">0</property>
+					</packing>
+				</child>
+				<child>
+					<object class="HAL_Button" id="measureCurrentTool">
+						<property name="label" translatable="yes">Measure Current Tool Length</property>
+						<property name="visible">True</property>
+						<property name="can-focus">True</property>
+						<property name="receives-default">True</property>
+						<signal name="clicked" handler="measureCurrentTool" swapped="no"/>
+					</object>
+					<packing>
+						<property name="expand">False</property>
+						<property name="fill">False</property>
+						<property name="pack-type">end</property>
+						<property name="position">0</property>
+					</packing>
+				</child>
+			</object>
+			<packing>
+				<property name="expand">False</property>
+				<property name="fill">False</property>
+				<property name="position">5</property>
+			</packing>
+		</child>
+
       </object>
     </child>
   </object>
