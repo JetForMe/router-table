@@ -1,4 +1,5 @@
-# router-table
+# CNC Router Table
+
 Bits and pieces (mostly LinuxCNC config) describing my router table.
 
 ## Notes
