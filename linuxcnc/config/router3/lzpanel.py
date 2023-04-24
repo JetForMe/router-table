@@ -54,7 +54,6 @@ class HandlerClass:
 			sCommand.wait_complete()
 			sCommand.mode(saveMode)
 
-
 	def __init__(self, halcomp,builder,useropts):
 		'''
 		Handler classes are instantiated in the following state:
