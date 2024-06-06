@@ -49,10 +49,23 @@ class HandlerClass:
 			print("Current coordinate system: ", saveCoordinates)
 			sCommand.mode(linuxcnc.MODE_MDI)
 			sCommand.wait_complete()
-			sCommand.mdi("o<tshome> call")
+			#sCommand.mdi("o<tshome> call")
 			sCommand.mdi("o<pz> call")
 			sCommand.wait_complete()
 			sCommand.mode(saveMode)
+
+	def vacuumTable(self,widget,data=None):
+		print("vacuumTable called poop")
+		if mdiOK():
+			saveMode = sStat.task_mode
+			saveCoordinates = sStat.g5x_index
+			print("Current coordinate system: ", saveCoordinates)
+			sCommand.mode(linuxcnc.MODE_MDI)
+			sCommand.wait_complete()
+			sCommand.mdi("o<vacuum> call")
+			sCommand.wait_complete()
+			sCommand.mode(saveMode)
+			print("vacuumTable finished")
 
 	def __init__(self, halcomp,builder,useropts):
 		'''

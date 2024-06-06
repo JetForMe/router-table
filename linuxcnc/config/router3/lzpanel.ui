@@ -189,6 +189,21 @@
 						<property name="position">0</property>
 					</packing>
 				</child>
+				<child>
+					<object class="HAL_Button" id="vacuumTable">
+						<property name="label" translatable="yes">Vacuum Table</property>
+						<property name="visible">True</property>
+						<property name="can-focus">True</property>
+						<property name="receives-default">True</property>
+						<signal name="clicked" handler="vacuumTable" swapped="no"/>
+					</object>
+					<packing>
+						<property name="expand">False</property>
+						<property name="fill">False</property>
+						<property name="pack-type">end</property>
+						<property name="position">0</property>
+					</packing>
+				</child>
 			</object>
 			<packing>
 				<property name="expand">False</property>

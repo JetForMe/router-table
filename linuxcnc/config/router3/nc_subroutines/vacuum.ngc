@@ -1,0 +1,105 @@
+%
+O<vacuum> sub
+
+(print,Current tool: #<_current_tool>, current pocket: #<_current_pocket>)
+
+;	Stop the Spindle and wait for it to stop
+
+M5
+M66 P2 L3 Q20																		;	Wait up to 20 seconds for zero-speed input to go high
+																					;	TODO: Should this only be during a milltask?
+O200 if [#5399 LT 0.0]																;	If it timed out, return an error
+	(print, Spindle didn't stop)
+	O<lt> return [1]
+O200 endif
+
+;	Save stuff to restore
+
+#<saveCoord> = #5220
+#<metric> = #<_metric>
+#<absolute> = #<_absolute>
+#<feed> = #<_feed>
+
+;	If there's a tool in the spindle, put it away first
+
+O110 if [#<_current_tool> GT 0.0]													;	If there's a tool, return an error
+	(print, Tool #<_current_tool> in spindle, unloading to #<_current_pocket>)
+	O<ut> call [#<_current_pocket>]
+	O130 if [#<_value> NE 0.0]
+		; TODO: let ut.ngc tell us we were empty and proceed?
+		(print, Unable to unload tool #<tool_in_spindle> to pocket #<_current_pocket>)
+		(abort, Unable to unload tool #<tool_in_spindle> to pocket #<_current_pocket>)
+		O<auto_tool_change> return [0]
+	O130 endif
+O110 endif
+
+;	Test for tool present
+
+M66 P1 L0																			;	Test to see if a tool is locked in the spindle
+O120 if [[#<_task> GT 0] and #5399 NE 0.0]											;	If there's a tool, return an error
+	(print, Tool in spindle, can't load new tool)
+	(msg, Tool in spindle, can't load new tool)
+	O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+	O<lt> return [1]
+O120 endif
+
+
+; G59.3
+G90																					;	Set absolute motion
+G21																					;	Set metric
+
+;	Move to start position in upper-left
+
+G53 G0 Z0.0																			;	Raise tool all the way up
+G53 G0 X0 Y-375
+G53 F5000 G1 Z-262
+
+;	Begin vacuum passes
+
+F20000
+G53 G1 X1245
+G53 G1 Y-625
+G53 G1 X0
+G53 G1 Y-875
+G53 G1 X1245
+G53 G1 Y-1125
+G53 G1 X0
+G53 G1 Y-1375
+G53 G1 X1245
+G53 G1 Y-1625
+G53 G1 X0
+
+
+
+
+
+
+;	Restore things we changed above
+
+O<restore> call [#<metric>] [#<absolute>] [#<feed>]
+
+O100 if [#<saveCoord> EQ 1]
+	G54
+O100 elseif [#<saveCoord> EQ 2]
+	G55
+O100 elseif [#<saveCoord> EQ 3]
+	G56
+O100 elseif [#<saveCoord> EQ 4]
+	G57
+O100 elseif [#<saveCoord> EQ 5]
+	G58
+O100 elseif [#<saveCoord> EQ 6]
+	G59
+O100 elseif [#<saveCoord> EQ 7]
+	G59.1
+O100 elseif [#<saveCoord> EQ 8]
+	G59.2
+O100 elseif [#<saveCoord> EQ 9]
+	G59.3
+O100 endif
+
+
+;	End subroutine
+
+O<vacuum> endsub [0]
+%

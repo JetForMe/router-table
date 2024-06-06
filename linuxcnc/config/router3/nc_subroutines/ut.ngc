@@ -18,6 +18,14 @@ O160 if [#1 LE 0 OR #<_ini[atc]num_pockets> LT #1]
 	O<ut> return [1]
 O160 endif
 
+;	Check for good air pressure before doing anything…
+
+M66 L3 Q3 P3
+O90 if [#5399 LT 0.0]
+	(abort, Tool unload aborted, insufficient air pressure)
+	O<ut> return [0]
+O90 endif
+
 
 ;	Stop the Spindle and wait for it to stop
 
