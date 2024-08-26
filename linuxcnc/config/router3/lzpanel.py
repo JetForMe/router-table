@@ -63,7 +63,8 @@ class HandlerClass:
 			sCommand.mode(linuxcnc.MODE_MDI)
 			sCommand.wait_complete()
 			sCommand.mdi("o<vacuum> call")
-			sCommand.wait_complete()
+			result = sCommand.wait_complete(2 * 60)
+			print(f"vacuum call wait result: {result}")
 			sCommand.mode(saveMode)
 			print("vacuumTable finished")
 

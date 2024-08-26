@@ -56,18 +56,33 @@ G53 F5000 G1 Z-262
 
 ;	Begin vacuum passes
 
+;(print, Start Pass)
 F20000
+
+#<y> = -375
+#<deltaY> = 200
+o201 while [#<y> gt -2620]
+	G53 G1 X1245
+	
+	#<y> = [#<y> - #<deltaY>]
+	o210 if [#<y> lt -2620]
+		#<y> = -2620
+	o210 endif
+	
+	G53 G1 Y[#<y>]
+	G53 G1 X0
+	
+	#<y> = [#<y> - #<deltaY>]
+	o220 if [#<y> lt -2620]
+		#<y> = -2620
+	o220 endif
+	G53 G1 Y[#<y>]
+	
+o201 end while
 G53 G1 X1245
-G53 G1 Y-625
-G53 G1 X0
-G53 G1 Y-875
-G53 G1 X1245
-G53 G1 Y-1125
-G53 G1 X0
-G53 G1 Y-1375
-G53 G1 X1245
-G53 G1 Y-1625
-G53 G1 X0
+G53 G0 Z0.0																			;	Raise tool all the way up
+G53 G0 X0 Y-375																		;	Return to where it started
+;(print, End Pass)
 
 
 
