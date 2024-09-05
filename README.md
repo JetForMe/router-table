@@ -2,6 +2,16 @@
 
 Bits and pieces (mostly LinuxCNC config) describing my router table.
 
+### Components
+
+| Component | Desc |
+| --------- | ---- |
+| Table     | I built a CNC router table by starting with an [AvidCNC 4x8](https://www.avidcnc.com/pro4896-4-x-8-cnc-router-machine-p-1337.html) router, that I had them customize to 4x9 (to make room for a rack-style tool changer). I only bought the mechanical components and limit switches from them, not their stepper motors, drives, or spindle. |
+| Rotary Axis | [AvidCNC rotary axis](https://www.avidcnc.com/avid-cnc-rotary-axis-p-724.html) |
+| Spindle   | [HSD ES330](https://www.hsdmechatronics.com/en/products/es330/) 4 kW, 24 kRPM, ATC |
+| Servos    | Teknic SD |
+| Interface | [Mesa 7176e](http://store.mesanet.com/index.php?route=product/product&product_id=290) |
+
 ## Notes
 
 ### Fan and Z-Brake Relays
