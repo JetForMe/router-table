@@ -63,4 +63,4 @@ $ sudo ifup enp5s0
 
 # Miscellanea
 
-[Etekcity Outdoor Smart Plug](https://www.etekcity.com/product/100344) uses an [ESP-01e](https://docs.ai-thinker.com/_media/esp8266/docs/esp-01e_product_specification_en.pdf) Wi-Fi controller and a [HLW8012](https://tinkerman.cat/post/hlw8012-ic-new-sonoff-pow) ([ESPHome](https://esphome.io/components/sensor/hlw8012.html)) with shunt resistor to measure power.
+[Etekcity Outdoor Smart Plug]([https://www.etekcity.com/product/100344](https://etekcity.com/products/smart-outdoor-wifi-outlet-eso15-tb) uses an [ESP-01e](https://docs.ai-thinker.com/_media/esp8266/docs/esp-01e_product_specification_en.pdf) Wi-Fi controller and a [HLW8012](https://tinkerman.cat/post/hlw8012-ic-new-sonoff-pow) ([ESPHome](https://esphome.io/components/sensor/hlw8012.html)) with shunt resistor to measure power.
