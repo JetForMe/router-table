@@ -7,7 +7,7 @@ Bits and pieces (mostly LinuxCNC config) describing my router table.
 | Component | Desc |
 | --------- | ---- |
 | Table     | [AvidCNC 4x8](https://www.avidcnc.com/pro4896-4-x-8-cnc-router-machine-p-1337.html) router, custom-ordered 4x9 (to make room for a rack-style tool changer). Only the mechanical components and limit switches from them, not their stepper motors, drives, or spindle. |
-| Rotary Axis | [AvidCNC rotary axis](https://www.avidcnc.com/avid-cnc-rotary-axis-p-724.html) |
+| Rotary Axis | [AvidCNC rotary axis](https://www.avidcnc.com/avid-cnc-rotary-axis-p-724.html) (rotary axis) |
 | Spindle   | [HSD ES330](https://www.hsdmechatronics.com/en/products/es330/) 4 kW, 24 kRPM, ATC |
 | VFD | Delta VFD-MS300 series, [VFD25AMS23ANSHA](https://deltaacdrives.com/delta-ms300-vfd25ams23ansha/)
 | Servos    | 4x [CPM-SDSK-3411P-ELS](https://teknic.com/model-info/CPM-SDSK-3411P-ELS/) (linear axes), 1x [CPM-SDSK-3421S-RLS](https://teknic.com/model-info/CPM-SDSK-3421S-RLS/) |
